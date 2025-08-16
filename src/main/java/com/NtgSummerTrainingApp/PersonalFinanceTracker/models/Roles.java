@@ -1,9 +1,7 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.models;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,8 +17,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Roles {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false,unique = true)
+    private RoleEnum role;
     // it has a 1-to-many relationship with User_roles table
     @OneToMany(mappedBy = "role")
     @JsonManagedReference
