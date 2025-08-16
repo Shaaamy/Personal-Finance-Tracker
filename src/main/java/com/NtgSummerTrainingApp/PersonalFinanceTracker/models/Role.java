@@ -20,12 +20,15 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false,unique = true)
-    private RoleEnum role;
+    private String name;
     // it has a 1-to-many relationship with User_roles table
     @OneToMany(mappedBy = "role")
     @JsonManagedReference
     private Set<UserRoles> userRoles = new HashSet<>();
+
+    public void setName(RoleEnum roleEnum){
+        this.name = roleEnum.name();
+    }
 
 }

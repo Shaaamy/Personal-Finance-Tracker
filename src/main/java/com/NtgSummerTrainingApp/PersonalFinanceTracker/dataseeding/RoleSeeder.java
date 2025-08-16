@@ -16,9 +16,9 @@ public class RoleSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
             for(RoleEnum roleEnum : RoleEnum.values()){
-                if(roleRepository.findByRole(roleEnum).isEmpty()) {
+                if(roleRepository.findByName(roleEnum.name()).isEmpty()) {
                     Role role = new Role();
-                    role.setRole(roleEnum);
+                    role.setName(roleEnum);
                     roleRepository.save(role);
                 }
 
