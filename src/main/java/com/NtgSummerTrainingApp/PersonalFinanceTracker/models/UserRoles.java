@@ -26,5 +26,5 @@ public class UserRoles {
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false) // Foreign key to Roles table
     @JsonBackReference
-    private Roles role;
+    private Role role;
 }
