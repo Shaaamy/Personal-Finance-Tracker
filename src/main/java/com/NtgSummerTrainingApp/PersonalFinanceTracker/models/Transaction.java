@@ -22,9 +22,17 @@ public class Transaction {
 
     @Column(nullable = false)
     private BigDecimal amount;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryTypeEnum type;
+
     private String description;
-    private String currency;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CurrencyType currency;
+
     private LocalDate date;
 
     @CreationTimestamp
