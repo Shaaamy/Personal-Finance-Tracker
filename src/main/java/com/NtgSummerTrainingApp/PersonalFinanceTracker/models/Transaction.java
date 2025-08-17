@@ -30,7 +30,11 @@ public class Transaction {
     private CategoryType type;
 
     private String description;
-    private String currency; // enum
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CurrencyType currency;
+
     private LocalDate date;
 
     @CreationTimestamp
