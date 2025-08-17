@@ -1,5 +1,5 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.DTO.TransactionDTO;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.TransactionDTO;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Transaction;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;

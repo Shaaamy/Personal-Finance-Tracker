@@ -21,10 +21,12 @@ public class CategoryController {
     public ResponseEntity<String> createCategory(@RequestBody @Valid CategoryRequestDto categoryReq){
         return new ResponseEntity<>( categoryService.createNewCategory(categoryReq), HttpStatus.CREATED);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable long id){
         return new ResponseEntity<>(categoryService.findCategoryById(id),HttpStatus.OK);
     }
+
     @GetMapping()
     public ResponseEntity<List<CategoryResponseDto>> getAllCategories(){
         return new ResponseEntity<>(categoryService.findAllCategories(),HttpStatus.OK);

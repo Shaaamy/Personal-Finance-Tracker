@@ -1,4 +1,4 @@
-package com.NtgSummerTrainingApp.PersonalFinanceTracker.DTO;
+package com.NtgSummerTrainingApp.PersonalFinanceTracker.dto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CategoryTypeEnum;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CurrencyType;
 import lombok.*;

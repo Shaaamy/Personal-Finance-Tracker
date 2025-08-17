@@ -1,6 +1,6 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.DTO.TransactionDTO;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.TransactionDTO;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TransactionServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

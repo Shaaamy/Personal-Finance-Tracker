@@ -12,6 +12,7 @@ public class UserMapper {
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .role(user.getRole())
+                .balance(user.getBalance())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
@@ -24,6 +25,7 @@ public class UserMapper {
                 .password(userDto.getPassword())  // required when creating new users
                 .fullName(userDto.getFullName())
                 .role(userDto.getRole())
+                .balance(userDto.getBalance())
                 .createdAt(userDto.getCreatedAt())
                 .updatedAt(userDto.getUpdatedAt())
                 .build();
