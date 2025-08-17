@@ -4,27 +4,25 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CategoryType;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table(name = "categories")
 @Data
-@Setter
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false,unique = true)
     private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CategoryType type;
+    private CategoryTypeEnum type;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -41,4 +39,16 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private Set<RecurringTransaction> recurringTransactions;
+
+
+    public Category(String name, CategoryTypeEnum type, Set<User> users, Set<Transaction> transactions, Set<Budget> budgets, Set<RecurringTransaction> recurringTransactions) {
+        this.name = name;
+        this.type = type;
+        this.users = users;
+        this.transactions = transactions;
+        this.budgets = budgets;
+        this.recurringTransactions = recurringTransactions;
+    }
+
+
 }

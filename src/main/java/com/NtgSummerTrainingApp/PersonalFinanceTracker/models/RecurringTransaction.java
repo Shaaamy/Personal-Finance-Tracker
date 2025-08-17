@@ -9,8 +9,6 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "recurring_transactions")
 @Data
-@Setter
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecurringTransaction {
