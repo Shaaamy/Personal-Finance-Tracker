@@ -1,6 +1,6 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.models;
 
-public enum CategoryType {
+public enum CategoryTypeEnum {
     INCOME,
     EXPENSE
 }
