@@ -6,7 +6,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
-import org.modelmapper.ModelMapper;
+//import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
