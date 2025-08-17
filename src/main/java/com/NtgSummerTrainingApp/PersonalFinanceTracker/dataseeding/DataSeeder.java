@@ -28,7 +28,7 @@ public class DataSeeder {
             );
 
             for (Category category : defaultCategories) {
-                categoryRepository.findByName(category.getName())
+                categoryRepository.findByNameContainingIgnoreCase(category.getName())
                         .orElseGet(() -> categoryRepository.save(category));
             }
         };
