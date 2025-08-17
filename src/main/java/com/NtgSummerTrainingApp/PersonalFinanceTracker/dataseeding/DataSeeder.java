@@ -2,10 +2,7 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.dataseeding;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CategoryTypeEnum;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Role;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.RoleEnum;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryRepository;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,16 +13,9 @@ import java.util.List;
 public class DataSeeder {
 
     @Bean
-    CommandLineRunner initDatabase(CategoryRepository categoryRepository, RoleRepository roleRepository) {
+    CommandLineRunner initDatabase(CategoryRepository categoryRepository) {
         return args -> {
-            // Role Seeding
-            for(RoleEnum roleEnum : RoleEnum.values()) {
-                if (roleRepository.findByName(roleEnum.name()).isEmpty()) {
-                    Role role = new Role();
-                    role.setName(RoleEnum.valueOf(String.valueOf(roleEnum)));
-                    roleRepository.save(role);
-                }
-            }
+
             // Category Seeding
             List<Category> defaultCategories = List.of(
                     new Category("Food", CategoryTypeEnum.EXPENSE, null, null, null,null),
