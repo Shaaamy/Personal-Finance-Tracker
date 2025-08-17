@@ -8,12 +8,15 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
 @Entity
 @Table(name = "users")
 @Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
@@ -38,10 +41,28 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 
 
-    @OneToMany(mappedBy = "user")
+    @ManyToMany
+    @JoinTable(
+            name = "user_categories",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
     @JsonManagedReference
-    private Set<Category> categories = new HashSet<>();
+    private Set<Category> categories;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Transaction> transactions;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Budget> budgets;
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<RecurringTransaction> recurringTransactions;
 }

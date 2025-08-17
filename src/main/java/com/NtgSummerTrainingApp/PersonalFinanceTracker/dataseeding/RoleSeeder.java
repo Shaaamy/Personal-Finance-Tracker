@@ -18,7 +18,7 @@ public class RoleSeeder implements CommandLineRunner {
             for(RoleEnum roleEnum : RoleEnum.values()){
                 if(roleRepository.findByName(roleEnum.name()).isEmpty()) {
                     Role role = new Role();
-                    role.setName(roleEnum);
+                    role.setName(RoleEnum.valueOf(String.valueOf(roleEnum)));
                     roleRepository.save(role);
                 }
 

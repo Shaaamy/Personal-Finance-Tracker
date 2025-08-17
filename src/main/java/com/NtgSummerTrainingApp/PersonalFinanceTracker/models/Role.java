@@ -10,17 +10,20 @@ import java.util.Set;
 @Entity
 @Table(name = "roles")
 @Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     @Column(nullable = false,unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+    private Set<User> users;
 
     public void setName(RoleEnum roleEnum){
         this.name = roleEnum.name();

@@ -1,6 +1,6 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.models;
 
-public enum RoleEnum {
-    ADMIN,
-    USER
+public enum CategoryType {
+    INCOME,
+    EXPENSE
 }
