@@ -21,8 +21,12 @@ public class RecurringTransaction {
 
     @Column(nullable = false)
     private BigDecimal amount;
-    private String type;
-    private String frequency;        //daily, weekly, monthly
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryType type;
+
+    private String frequency; // enum       //daily, weekly, monthly
     private LocalDate startDate;
     private LocalDate endDate;
 

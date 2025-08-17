@@ -24,9 +24,13 @@ public class Transaction {
 
     @Column(nullable = false)
     private BigDecimal amount;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryType type;
+
     private String description;
-    private String currency;
+    private String currency; // enum
     private LocalDate date;
 
     @CreationTimestamp
