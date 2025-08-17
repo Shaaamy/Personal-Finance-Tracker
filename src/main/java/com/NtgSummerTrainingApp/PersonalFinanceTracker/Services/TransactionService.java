@@ -6,16 +6,14 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryRepository;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.TransactionRepo;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.UserRepo;
-import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
 @Service
-public class TransactionServices {
+public class TransactionService {
 
     @Autowired
     private TransactionRepo transactionRepo;
@@ -27,7 +25,7 @@ public class TransactionServices {
     private CategoryRepository categoryRepo;
 
     @org.springframework.beans.factory.annotation.Autowired
-    public TransactionServices(TransactionRepo transactionRepo) {
+    public TransactionService(TransactionRepo transactionRepo) {
         this.transactionRepo = transactionRepo;
     }
 

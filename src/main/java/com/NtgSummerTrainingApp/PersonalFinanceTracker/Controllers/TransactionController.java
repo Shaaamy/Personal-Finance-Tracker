@@ -1,7 +1,8 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
+
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TransactionService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.TransactionDTO;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TransactionServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TransactionController {
 
-    private final TransactionServices transactionService;
+    private final TransactionService transactionService;
 
     @PostMapping("/create")
     public ResponseEntity <TransactionDTO> addTransaction(@RequestBody TransactionDTO dto){
