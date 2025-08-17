@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "transactions")
 @Data
-@Setter
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
@@ -27,7 +25,7 @@ public class Transaction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CategoryType type;
+    private CategoryTypeEnum type;
 
     private String description;
 

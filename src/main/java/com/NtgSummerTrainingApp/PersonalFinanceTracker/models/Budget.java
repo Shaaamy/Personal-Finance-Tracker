@@ -8,8 +8,6 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "budgets")
 @Data
-@Setter
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Budget {

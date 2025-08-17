@@ -9,8 +9,6 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "recurring_transactions")
 @Data
-@Setter
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecurringTransaction {
@@ -24,7 +22,7 @@ public class RecurringTransaction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CategoryType type;
+    private CategoryTypeEnum type;
 
     private String frequency; // enum       //daily, weekly, monthly
     private LocalDate startDate;
