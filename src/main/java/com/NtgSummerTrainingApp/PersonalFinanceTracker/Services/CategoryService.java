@@ -1,5 +1,6 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
 
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.CategoryMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryRequestDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryResponseDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
@@ -28,7 +29,7 @@ public class CategoryService {
             throw new RuntimeException("Category with name '" + categoryReq.getName() + "' already exists");
         }
 
-        Category savedCategory = new Category(categoryReq.getName(),categoryReq.getType(),null,null,null,null);
+        Category savedCategory = CategoryMapper.toEntity(categoryReq);
         categoryRepository.save(savedCategory);
         return "New Category Is Added Successfully With Id : "+ savedCategory.getId();
     }
@@ -38,7 +39,7 @@ public class CategoryService {
     //
     public CategoryResponseDto findCategoryById(long id){
         Category category = categoryRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Category with id " +id+" Not Found"));
-        return new CategoryResponseDto(category);
+        return CategoryMapper.toDTO(category);
     }
 
     //
@@ -51,7 +52,7 @@ public class CategoryService {
         }
         return categories
                 .stream()
-                .map(CategoryResponseDto::new)
+                .map(CategoryMapper::toDTO)
                 .toList();
     }
 }
