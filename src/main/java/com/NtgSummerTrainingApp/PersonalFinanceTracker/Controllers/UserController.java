@@ -53,11 +53,7 @@ public class UserController {
     //
     @GetMapping
     public ResponseEntity<?> getAllUsers(@ModelAttribute PaginationRequest paginationReq) {
-        try {
             return new ResponseEntity<>(userService.getAllUsers(paginationReq),HttpStatus.OK);
-        }catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
     }
 
 
