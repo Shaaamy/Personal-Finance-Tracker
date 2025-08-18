@@ -6,6 +6,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryRequestDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryResponseDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.DuplicateResourceException;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryRepository;
@@ -13,15 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 //import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.List;
 
 @Service
 @Data
@@ -34,7 +27,7 @@ public class CategoryService {
     public String createNewCategory( CategoryRequestDto categoryReq){
 
         if(categoryRepository.existsByName(categoryReq.getName())){
-            throw new RuntimeException("Category with name '" + categoryReq.getName() + "' already exists");
+            throw new DuplicateResourceException("Category with name '" + categoryReq.getName() + "' already exists");
         }
 
         Category savedCategory = CategoryMapper.toEntity(categoryReq);
@@ -77,7 +70,7 @@ public class CategoryService {
     public String updateCategoryPartially(CategoryRequestDto categoryReq , long id){
         Category existingCategory = categoryRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Category with id "+id +" Not Found"));
         if(categoryRepository.existsByName(categoryReq.getName())){
-            throw new RuntimeException("Category with name '" + categoryReq.getName() + "' already exists");
+            throw new DuplicateResourceException("Category with name '" + categoryReq.getName() + "' already exists");
         }
 
         if (categoryReq.getName() != null ) {
@@ -96,7 +89,7 @@ public class CategoryService {
     public String update(CategoryRequestDto categoryReq, long id) {
         Category existingCategory = categoryRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Category with id "+id +" Not Found"));
         if(categoryRepository.existsByName(categoryReq.getName())){
-            throw new RuntimeException("Category with name '" + categoryReq.getName() + "' already exists");
+            throw new DuplicateResourceException("Category with name '" + categoryReq.getName() + "' already exists");
         }
         existingCategory.setName(categoryReq.getName());
         existingCategory.setType(categoryReq.getType());

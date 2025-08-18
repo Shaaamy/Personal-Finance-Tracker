@@ -1,12 +1,11 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
 
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.CategoryMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.PaginationMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.UserMapper;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryResponseDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.UserDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.DuplicateResourceException;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.UserRepo;
@@ -15,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -24,12 +21,19 @@ public class UserService {
     private final UserRepo userRepo;
 
     public User createUser(User user) {
+
+        if(userRepo.existsByUsername(user.getUsername())){
+            throw new DuplicateResourceException("Username '" + user.getUsername() + "' already exists");
+        }
+        if(userRepo.existsByEmail(user.getEmail())){
+            throw new DuplicateResourceException("Email '" + user.getEmail() + "' already exists");
+        }
         return userRepo.save(user);
     }
 
     public User updateUser(Long id, User userDetails) {
         User existingUser = userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
 
         existingUser.setBalance(userDetails.getBalance());
         existingUser.setFullName(userDetails.getFullName());
@@ -51,14 +55,16 @@ public class UserService {
     }
 
 
-    public User getUserById(Long id) {
-        return userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+    public UserDto getUserById(Long id) {
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
+        return UserMapper.toDTO(user);
     }
 
-    public void deleteUser(Long id) {
+    public String deleteUser(Long id) {
         User user = userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
         userRepo.delete(user);
+        return "User with id " +id+" is deleted successfully";
     }
 }
