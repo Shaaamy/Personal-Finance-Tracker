@@ -2,7 +2,11 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryRequestDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryResponseDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public class CategoryMapper {
 
@@ -22,4 +26,15 @@ public class CategoryMapper {
                 .type(dto.getType())
                 .build();
     }
+
+//    public static PaginationDto<> toPaginatedDto(Page<Category> categoryPage){
+//            List<CategoryResponseDto> dtos = categoryPage.stream().map(CategoryMapper::toDTO).toList();
+//            return new PaginationDto<>(
+//                    dtos,
+//                    categoryPage.getNumber(),
+//                    categoryPage.getSize(),
+//                    categoryPage.getTotalPages(),
+//                    categoryPage.getTotalElements()
+//            );
+//    }
 }

@@ -2,6 +2,8 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.UserMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.UserService;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.UserDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
 import lombok.RequiredArgsConstructor;
@@ -51,12 +53,8 @@ public class UserController {
         // get all users
     //
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        List<UserDto> userDtos = users.stream()
-                .map(UserMapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userDtos);
+    public ResponseEntity<PaginationDto<UserDto>> getAllUsers(@ModelAttribute PaginationRequest paginationReq) {
+        return new ResponseEntity<>(userService.getAllUsers(paginationReq),HttpStatus.OK);
     }
 
 

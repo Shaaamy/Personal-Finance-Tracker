@@ -3,8 +3,11 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.CategoryService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryRequestDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryResponseDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
 import jakarta.validation.Valid;
 import lombok.Data;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +29,8 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.findCategoryById(id),HttpStatus.OK);
     }
     @GetMapping()
-    public ResponseEntity<List<CategoryResponseDto>> getAllCategories(){
-        return new ResponseEntity<>(categoryService.findAllCategories(),HttpStatus.OK);
+    public ResponseEntity<PaginationDto<CategoryResponseDto>> getAllCategories(@ModelAttribute PaginationRequest paginationReq){
+        return new ResponseEntity<>(categoryService.findAllCategories(paginationReq),HttpStatus.OK);
     }
     @GetMapping("/name/{name}")
     public ResponseEntity<CategoryResponseDto> getCategoryByName(@PathVariable String name){

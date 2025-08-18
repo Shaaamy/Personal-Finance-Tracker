@@ -2,6 +2,8 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TransactionService;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.TransactionDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,11 @@ public class TransactionController {
     public ResponseEntity<TransactionDTO> getTransaction(@PathVariable Long id) {
         TransactionDTO dto = transactionService.getTransactionById(id);
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping()
+    public ResponseEntity<PaginationDto<TransactionDTO>> getAllTransactions(@ModelAttribute PaginationRequest paginationReq){
+        return new ResponseEntity<>(transactionService.getAllTransactions(paginationReq) , HttpStatus.OK);
     }
 
     @GetMapping("/user/{userId}")

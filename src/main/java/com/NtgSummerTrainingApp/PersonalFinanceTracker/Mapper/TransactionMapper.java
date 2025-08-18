@@ -1,5 +1,6 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper;
 
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.TransactionDTO;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Transaction;
 
@@ -18,4 +19,6 @@ public class TransactionMapper {
                 .categoryName(transaction.getCategory().getName())
                 .build();
     }
+
+
 }

@@ -1,13 +1,21 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.CategoryMapper;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.PaginationMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryRequestDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryResponseDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 //import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -45,15 +53,14 @@ public class CategoryService {
     //
      // Find All Categories
     //
-    public List<CategoryResponseDto> findAllCategories(){
-        List<Category> categories = categoryRepository.findAll();
+    public PaginationDto<CategoryResponseDto> findAllCategories(PaginationRequest paginationReq){
+
+        Page<Category> categories = categoryRepository.findAll(PaginationHelper.getPageable(paginationReq));
         if(categories.isEmpty()){
             throw new EntityNotFoundException("No Categories Found");
         }
-        return categories
-                .stream()
-                .map(CategoryMapper::toDTO)
-                .toList();
+        Page<CategoryResponseDto> categoryResponseDtoPage = categories.map(CategoryMapper::toDTO);
+        return PaginationMapper.toPaginatedDto(categoryResponseDtoPage);
     }
 
     //
