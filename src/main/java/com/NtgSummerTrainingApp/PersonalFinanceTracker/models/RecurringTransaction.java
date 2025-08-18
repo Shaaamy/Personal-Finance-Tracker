@@ -24,7 +24,8 @@ public class RecurringTransaction {
     @Column(nullable = false)
     private CategoryTypeEnum type;
 
-    private String frequency; // enum       //daily, weekly, monthly
+    @Enumerated(EnumType.STRING)
+    private FrequencyEnum frequency; // enum       //daily, weekly, monthly
     private LocalDate startDate;
     private LocalDate endDate;
 
