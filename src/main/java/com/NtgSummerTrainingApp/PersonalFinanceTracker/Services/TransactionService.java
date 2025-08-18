@@ -1,4 +1,5 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.TransactionMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.TransactionDTO;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Transaction;
@@ -47,20 +48,20 @@ public class TransactionService {
         transaction.setCategory(category);
 
         Transaction saved = transactionRepo.save(transaction);
-        return toDTO(saved);
+        return TransactionMapper.toDTO(saved);
     }
 
     //  Get transaction by ID
     public TransactionDTO getTransactionById(Long id) {
         Transaction transaction = transactionRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
-        return toDTO(transaction);
+        return TransactionMapper.toDTO(transaction);
     }
 
     //  Get all transactions for a user
     public List<TransactionDTO> getTransactionsByUser(Long userId) {
         List<Transaction> transactions = transactionRepo.findByUserId(userId);
-        return transactions.stream().map(this::toDTO).toList();
+        return transactions.stream().map(TransactionMapper::toDTO).toList();
     }
 
     //  Delete a transaction
@@ -71,19 +72,19 @@ public class TransactionService {
         transactionRepo.deleteById(id);
     }
 
-    private TransactionDTO toDTO(Transaction transaction) {
-        return new TransactionDTO(
-                transaction.getId(),
-                transaction.getAmount(),
-                transaction.getType(),
-                transaction.getDescription(),
-                transaction.getCurrency(),
-                transaction.getDate(),
-                transaction.getCreatedAt(),
-                transaction.getUser().getId(),
-                transaction.getCategory().getId(),
-                transaction.getCategory().getName()
-        );
-    }
+//    private TransactionDTO toDTO(Transaction transaction) {
+//        return new TransactionDTO(
+//                transaction.getId(),
+//                transaction.getAmount(),
+//                transaction.getType(),
+//                transaction.getDescription(),
+//                transaction.getCurrency(),
+//                transaction.getDate(),
+//                transaction.getCreatedAt(),
+//                transaction.getUser().getId(),
+//                transaction.getCategory().getId(),
+//                transaction.getCategory().getName()
+//        );
+//    }
 
 }

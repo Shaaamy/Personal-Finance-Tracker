@@ -1,5 +1,6 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
 
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.BudgetMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.BudgetDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Budget;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
@@ -43,7 +44,7 @@ public class BudgetService {
 
         Budget saved = budgetRepository.save(budget);
 
-        return toDTO(saved);
+        return BudgetMapper.toDTO(saved);
     }
 
 
@@ -61,15 +62,15 @@ public class BudgetService {
     }
 
 
-    private BudgetDto toDTO(Budget budget) {
-        return new BudgetDto(
-                budget.getId(),
-                budget.getMonth(),
-                budget.getYear(),
-                budget.getAmount(),
-                budget.getUser().getId(),
-                budget.getCategory().getId(),
-                budget.getCategory().getName()
-        );
-    }
+//    private BudgetDto toDTO(Budget budget) {
+//        return new BudgetDto(
+//                budget.getId(),
+//                budget.getMonth(),
+//                budget.getYear(),
+//                budget.getAmount(),
+//                budget.getUser().getId(),
+//                budget.getCategory().getId(),
+//                budget.getCategory().getName()
+//        );
+//    }
 }
