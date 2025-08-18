@@ -48,13 +48,16 @@ public class UserController {
     }
 
 
-
     //
         // get all users
     //
     @GetMapping
-    public ResponseEntity<PaginationDto<UserDto>> getAllUsers(@ModelAttribute PaginationRequest paginationReq) {
-        return new ResponseEntity<>(userService.getAllUsers(paginationReq),HttpStatus.OK);
+    public ResponseEntity<?> getAllUsers(@ModelAttribute PaginationRequest paginationReq) {
+        try {
+            return new ResponseEntity<>(userService.getAllUsers(paginationReq),HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
 

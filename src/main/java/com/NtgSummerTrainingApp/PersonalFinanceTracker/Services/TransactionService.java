@@ -6,6 +6,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.TransactionDTO;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CategoryTypeEnum;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Transaction;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryRepository;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -91,19 +93,43 @@ public class TransactionService {
         transactionRepo.deleteById(id);
     }
 
-//    private TransactionDTO toDTO(Transaction transaction) {
-//        return new TransactionDTO(
-//                transaction.getId(),
-//                transaction.getAmount(),
-//                transaction.getType(),
-//                transaction.getDescription(),
-//                transaction.getCurrency(),
-//                transaction.getDate(),
-//                transaction.getCreatedAt(),
-//                transaction.getUser().getId(),
-//                transaction.getCategory().getId(),
-//                transaction.getCategory().getName()
-//        );
-//    }
+
+    public List<TransactionDTO> filterTransactions(Long userId,
+                                                   Long categoryId,
+                                                   CategoryTypeEnum type,
+                                                   LocalDate startDate,
+                                                   LocalDate endDate
+                                                   ) {
+
+        List<Transaction> transactions = transactionRepo.findByUserId(userId);
+
+        if (startDate != null) {
+            transactions = transactions.stream()
+                    .filter(t -> !t.getDate().isBefore(startDate))
+                    .toList();
+        }
+
+        if (endDate != null) {
+            transactions = transactions.stream()
+                    .filter(t -> !t.getDate().isAfter(endDate))
+                    .toList();
+        }
+
+        if (type != null) {
+            transactions = transactions.stream()
+                    .filter(t -> t.getType().name().equalsIgnoreCase(String.valueOf(type)))
+                    .toList();
+        }
+
+        if (categoryId != null) {
+            transactions = transactions.stream()
+                    .filter(t -> t.getCategory() != null && t.getCategory().getId().equals(categoryId))
+                    .toList();
+        }
+
+        return transactions.stream()
+                .map(TransactionMapper::toDTO)
+                .toList();
+    }
 
 }
