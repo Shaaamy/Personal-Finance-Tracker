@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("budgets")
@@ -35,4 +36,25 @@ public class BudgetController {
 
         return ResponseEntity.ok("Total spending for this budget: " + spending);
     }
+
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<BudgetDto>> getAllBudgetsForUser(@PathVariable Long userId) {
+        List<BudgetDto> budgets = budgetService.getAllBudgetsForUser(userId);
+        return ResponseEntity.ok(budgets);
+    }
+
+    @DeleteMapping("/user/{userId}/{budgetId}")
+    public ResponseEntity<?> deleteBudgetForUser(
+            @PathVariable Long userId,
+            @PathVariable Long budgetId) {
+        try {
+            budgetService.deleteBudgetForUser(userId, budgetId);
+            return new ResponseEntity<>("Budget deleted successfully", HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
 }

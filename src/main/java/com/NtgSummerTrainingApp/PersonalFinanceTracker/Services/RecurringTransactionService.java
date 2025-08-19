@@ -1,5 +1,6 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
 
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.RecurringTransactionMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.RecurringTransactionDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.RecurringTransaction;
@@ -51,6 +52,43 @@ public class RecurringTransactionService {
                 recurringTransactionRepo.save(rt);
             }
         }
+    }
+
+
+    public List<RecurringTransactionDto> getAllByUser(Long userId) {
+        List<RecurringTransaction> list = recurringTransactionRepository.findByUserId(userId);
+        return list.stream()
+                .map(RecurringTransactionMapper::toDto)
+                .toList();
+    }
+
+    public RecurringTransactionDto update(Long id, RecurringTransactionDto dto) {
+        RecurringTransaction existing = recurringTransactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Recurring transaction not found"));
+
+        existing.setAmount(dto.getAmount());
+        existing.setType(dto.getType());
+        existing.setFrequency(dto.getFrequency());
+        existing.setStartDate(dto.getStartDate());
+        existing.setEndDate(dto.getEndDate());
+        existing.setDescription(dto.getDescription());
+
+        if (dto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            existing.setCategory(category);
+        }
+
+        RecurringTransaction updated = recurringTransactionRepository.save(existing);
+        return RecurringTransactionMapper.toDto(updated);
+    }
+
+
+    public void delete(Long id) {
+        if (!recurringTransactionRepository.existsById(id)) {
+            throw new RuntimeException("Recurring transaction not found");
+        }
+        recurringTransactionRepository.deleteById(id);
     }
 
 }

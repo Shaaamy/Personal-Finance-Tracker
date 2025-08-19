@@ -61,16 +61,22 @@ public class BudgetService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public List<BudgetDto> getAllBudgetsForUser(Long userId) {
+        return budgetRepository.findByUserId(userId)
+                .stream()
+                .map(BudgetMapper::toDTO)
+                .toList();
+    }
 
-//    private BudgetDto toDTO(Budget budget) {
-//        return new BudgetDto(
-//                budget.getId(),
-//                budget.getMonth(),
-//                budget.getYear(),
-//                budget.getAmount(),
-//                budget.getUser().getId(),
-//                budget.getCategory().getId(),
-//                budget.getCategory().getName()
-//        );
-//    }
+
+    public void deleteBudgetForUser(Long userId, Long budgetId) {
+        Budget budget = budgetRepository.findById(budgetId)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+
+        if (budget.getUser().getId() != (userId)) {
+            throw new RuntimeException("This budget does not belong to the user");
+        }
+
+        budgetRepository.delete(budget);
+    }
 }
