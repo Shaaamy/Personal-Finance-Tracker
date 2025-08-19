@@ -5,10 +5,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.TransactionDTO;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CategoryTypeEnum;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Transaction;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryRepository;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.TransactionRepo;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.UserRepo;
@@ -132,4 +129,15 @@ public class TransactionService {
                 .toList();
     }
 
+
+    public Transaction createFromRecurring(RecurringTransaction rt) {
+        Transaction tx = new Transaction();
+        tx.setAmount(rt.getAmount());
+        tx.setType(rt.getType());
+        tx.setCategory(rt.getCategory());
+        tx.setDate(LocalDate.now());
+        tx.setUser(rt.getUser());
+        tx.setDescription(rt.getDescription());
+        return transactionRepo.save(tx);
+    }
 }
