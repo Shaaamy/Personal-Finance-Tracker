@@ -1,6 +1,7 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.SummaryService;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.AnnualSummaryDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.MonthlySummaryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,14 @@ public class SummaryController {
             @RequestParam Integer year) {
 
         MonthlySummaryDto summary = summaryService.getMonthlySummary(userId, month, year);
+        return ResponseEntity.ok(summary);
+    }
+    @GetMapping("/annually")
+    public ResponseEntity<AnnualSummaryDto> getAnnualSummary(
+            @RequestParam Long userId,
+            @RequestParam int year) {
+
+        AnnualSummaryDto summary = summaryService.getAnnualSummary(userId, year);
         return ResponseEntity.ok(summary);
     }
 }
