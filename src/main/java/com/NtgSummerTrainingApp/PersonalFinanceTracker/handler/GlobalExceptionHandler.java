@@ -1,6 +1,8 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.handler;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.ILoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -49,9 +52,11 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(DuplicateResourceException ex) {
-        ErrorResponse error = new ErrorResponse(ex.getMessage(), "BAD_REQUEST");
-        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+        log.error("Unexpected error occurred", ex);
+        ErrorResponse error = new ErrorResponse("Something went wrong. Please try again later.", "INTERNAL_SERVER_ERROR");
+        return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 
 
     }
