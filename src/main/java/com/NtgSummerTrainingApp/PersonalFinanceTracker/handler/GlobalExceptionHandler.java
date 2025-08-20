@@ -40,8 +40,8 @@ public class GlobalExceptionHandler {
     // Handle unique constraint / DB violations
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        ErrorResponse error = new ErrorResponse("DUPLICATE_ENTRY", "This value already exists or violates DB constraint");
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+        ErrorResponse error = new ErrorResponse("This value already exists or violates DB constraint", "BAD_REQUEST");
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     // Optional: handle generic runtime exceptions
@@ -52,11 +52,15 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(DuplicateResourceException ex) {
+        ErrorResponse error = new ErrorResponse(ex.getMessage(), "CONFLICT");
+        return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleOtherException(Exception ex) {
         log.error("Unexpected error occurred", ex);
         ErrorResponse error = new ErrorResponse("Something went wrong. Please try again later.", "INTERNAL_SERVER_ERROR");
         return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-
 
     }
