@@ -12,6 +12,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
     public User createUser(User user) {
 
@@ -28,6 +30,7 @@ public class UserService {
         if(userRepo.existsByEmail(user.getEmail())){
             throw new DuplicateResourceException("Email '" + user.getEmail() + "' already exists");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user);
     }
 
