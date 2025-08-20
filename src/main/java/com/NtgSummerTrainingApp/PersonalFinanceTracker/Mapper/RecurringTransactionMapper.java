@@ -16,6 +16,7 @@ public class RecurringTransactionMapper {
                 .frequency(transaction.getFrequency())
                 .startDate(transaction.getStartDate())
                 .endDate(transaction.getEndDate())
+                .description(transaction.getDescription())
                 .userId(transaction.getUser() != null ? transaction.getUser().getId() : null)
                 .categoryId(transaction.getCategory() != null ? transaction.getCategory().getId() : null)
                 .categoryName(transaction.getCategory() != null ? transaction.getCategory().getName() : null)
@@ -32,6 +33,7 @@ public class RecurringTransactionMapper {
         transaction.setFrequency(dto.getFrequency());
         transaction.setStartDate(dto.getStartDate());
         transaction.setEndDate(dto.getEndDate());
+        transaction.setDescription(dto.getDescription());
         return transaction;
     }
 }

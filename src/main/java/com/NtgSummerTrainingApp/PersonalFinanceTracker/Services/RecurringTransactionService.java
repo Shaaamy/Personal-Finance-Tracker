@@ -1,5 +1,6 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
 
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.RecurringTransactionMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.RecurringTransactionDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.RecurringTransaction;
@@ -8,7 +9,10 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryReposi
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.RecurringTransactionRepo;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.RecurringTransactionMapper.toDto;
 import static com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.RecurringTransactionMapper.toEntity;
@@ -20,6 +24,8 @@ public class RecurringTransactionService {
     private final RecurringTransactionRepo recurringTransactionRepository;
     private final UserRepo userRepository;
     private final CategoryRepository categoryRepository;
+    private final RecurringTransactionRepo recurringTransactionRepo;
+    private final TransactionService transactionService;
 
     public RecurringTransactionDto createRecurringTransaction(RecurringTransactionDto dto) {
         User user = userRepository.findById(dto.getUserId())
@@ -34,4 +40,55 @@ public class RecurringTransactionService {
         RecurringTransaction saved = recurringTransactionRepository.save(transaction);
         return toDto(saved);
     }
+
+
+    @Scheduled(cron = "0 0 0 * * ?")     // runs every day at midnight
+    public void processRecurringTransactions() {
+        List<RecurringTransaction> recurringList = recurringTransactionRepo.findByActiveTrue();
+        for (RecurringTransaction rt : recurringList) {
+            if (rt.isDueToday()) {
+                transactionService.createFromRecurring(rt);
+                rt.updateNextDueDate();
+                recurringTransactionRepo.save(rt);
+            }
+        }
+    }
+
+
+    public List<RecurringTransactionDto> getAllByUser(Long userId) {
+        List<RecurringTransaction> list = recurringTransactionRepository.findByUserId(userId);
+        return list.stream()
+                .map(RecurringTransactionMapper::toDto)
+                .toList();
+    }
+
+    public RecurringTransactionDto update(Long id, RecurringTransactionDto dto) {
+        RecurringTransaction existing = recurringTransactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Recurring transaction not found"));
+
+        existing.setAmount(dto.getAmount());
+        existing.setType(dto.getType());
+        existing.setFrequency(dto.getFrequency());
+        existing.setStartDate(dto.getStartDate());
+        existing.setEndDate(dto.getEndDate());
+        existing.setDescription(dto.getDescription());
+
+        if (dto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            existing.setCategory(category);
+        }
+
+        RecurringTransaction updated = recurringTransactionRepository.save(existing);
+        return RecurringTransactionMapper.toDto(updated);
+    }
+
+
+    public void delete(Long id) {
+        if (!recurringTransactionRepository.existsById(id)) {
+            throw new RuntimeException("Recurring transaction not found");
+        }
+        recurringTransactionRepository.deleteById(id);
+    }
+
 }
