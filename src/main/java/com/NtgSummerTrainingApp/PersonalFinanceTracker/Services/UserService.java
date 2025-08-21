@@ -8,10 +8,15 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.UserDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.DuplicateResourceException;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +26,7 @@ public class UserService {
 
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
     public User createUser(User user) {
 
@@ -69,5 +75,20 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
         userRepo.delete(user);
         return "User with id " +id+" is deleted successfully";
+    }
+
+    public UserDto login(UserDto userDto) {
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
+        if (authentication.isAuthenticated()) {
+            //Fetching the user twice is redundant
+            //The authentication step already loads the user using your UserDetailsService ---> ( MyUserDetailsService). You can get the authenticated user from:
+            UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+            User user = principal.getUser();
+            // Load the full User entity from DB
+            user = userRepo.findByUsername(userDto.getUsername());
+            return UserMapper.toDTO(user);
+        }
+        throw new RuntimeException("User is not valid");
     }
 }
