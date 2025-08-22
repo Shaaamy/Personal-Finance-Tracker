@@ -2,6 +2,7 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.UserMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.UserService;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.LoginResponseDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.UserDto;
@@ -31,7 +32,7 @@ public class UserController {
         return new ResponseEntity<>(UserMapper.toDTO(user1), HttpStatus.CREATED);
     }
     @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@RequestBody UserDto userDto){
+    public ResponseEntity<LoginResponseDto> login(@RequestBody UserDto userDto){
         return new ResponseEntity<>(userService.login(userDto),HttpStatus.OK);
     }
 

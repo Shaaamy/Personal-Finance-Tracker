@@ -2,6 +2,7 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.PaginationMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.UserMapper;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.LoginResponseDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.UserDto;
@@ -14,6 +15,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,6 +29,7 @@ public class UserService {
     private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     public User createUser(User user) {
 
@@ -43,12 +46,13 @@ public class UserService {
     public User updateUser(Long id, User userDetails) {
         User existingUser = userRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
-
+        String hashedPassword = passwordEncoder.encode(userDetails.getPassword());
         existingUser.setBalance(userDetails.getBalance());
         existingUser.setFullName(userDetails.getFullName());
         existingUser.setUsername(userDetails.getUsername());
-        existingUser.setPassword(userDetails.getPassword());
+        existingUser.setPassword(hashedPassword);
         existingUser.setEmail(userDetails.getEmail());
+        existingUser.setRole(userDetails.getRole());
 
         return userRepo.save(existingUser);
     }
@@ -77,18 +81,22 @@ public class UserService {
         return "User with id " +id+" is deleted successfully";
     }
 
-    public UserDto login(UserDto userDto) {
+    public LoginResponseDto login(UserDto userDto) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
         if (authentication.isAuthenticated()) {
             //Fetching the user twice is redundant
             //The authentication step already loads the user using your UserDetailsService ---> ( MyUserDetailsService). You can get the authenticated user from:
             UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-            User user = principal.getUser();
-            // Load the full User entity from DB
-            user = userRepo.findByUsername(userDto.getUsername());
-            return UserMapper.toDTO(user);
-        }
-        throw new RuntimeException("User is not valid");
+            User user = userRepo.findByUsername(principal.getUsername());
+            String token = jwtService.generateToken(principal.getUsername());
+
+            return new LoginResponseDto(
+                    token,
+                    principal.getUsername(),
+                    user.getFullName(), // from your User entity or principal
+                    user.getRole().name()      // assuming you store a single role, or adapt to list
+            );        }
+        throw new BadCredentialsException("Invalid username or password");
     }
 }
