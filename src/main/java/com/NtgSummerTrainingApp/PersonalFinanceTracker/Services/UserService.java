@@ -46,11 +46,13 @@ public class UserService {
     public User updateUser(Long id, User userDetails) {
         User existingUser = userRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id " + id));
-        String hashedPassword = passwordEncoder.encode(userDetails.getPassword());
+        if(userDetails.getPassword() != null){
+            String hashedPassword = passwordEncoder.encode(userDetails.getPassword());
+            existingUser.setPassword(hashedPassword);
+        }
         existingUser.setBalance(userDetails.getBalance());
         existingUser.setFullName(userDetails.getFullName());
         existingUser.setUsername(userDetails.getUsername());
-        existingUser.setPassword(hashedPassword);
         existingUser.setEmail(userDetails.getEmail());
         existingUser.setRole(userDetails.getRole());
 
