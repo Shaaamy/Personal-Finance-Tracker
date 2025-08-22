@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e4cf047f-a28d-44b8-8b53-c5e141d55756" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/.gitattributes" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/mvnw.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/BudgetController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/BudgetController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/CategoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/RecurringTransactionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/RecurringTransactionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/SummaryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/SummaryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/TransactionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/TransactionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Controllers/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/BudgetMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/BudgetMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/CategoryMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/CategoryMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/PaginationMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/PaginationMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/RecurringTransactionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/RecurringTransactionMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/TransactionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/TransactionMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Mapper/UserMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/PersonalFinanceTrackerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/PersonalFinanceTrackerApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/BudgetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/BudgetService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/CategoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/CategoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/JwtService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/MyUserDetailsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/MyUserDetailsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/RecurringTransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/RecurringTransactionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/SummaryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/SummaryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/TransactionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/TransactionService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/Services/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/configurations/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/configurations/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dataseeding/DataSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dataseeding/DataSeeder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/AnnualSummaryDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/AnnualSummaryDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/BasicStatisticsDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/BasicStatisticsDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/BudgetDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/BudgetDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/CategoryRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/CategoryRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/CategoryResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/CategoryResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/MonthlySummaryDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/MonthlySummaryDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/PaginationDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/PaginationDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/PaginationRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/PaginationRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/RecurringTransactionDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/RecurringTransactionDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/TransactionDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/TransactionDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/UserDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/dto/UserDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/handler/DuplicateResourceException.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/handler/DuplicateResourceException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/handler/ErrorResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/handler/ErrorResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/handler/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/handler/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/helper/PaginationHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/helper/PaginationHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/Budget.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/Budget.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/Category.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/CategoryTypeEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/CategoryTypeEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/CurrencyType.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/CurrencyType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/FrequencyEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/FrequencyEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/RecurringTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/RecurringTransaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/RoleEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/RoleEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/Transaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/Transaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/UserPrincipal.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/models/UserPrincipal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/repository/BudgetRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/repository/BudgetRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/repository/CategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/repository/CategoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/repository/RecurringTransactionRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/repository/RecurringTransactionRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/repository/TransactionRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/repository/TransactionRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/repository/UserRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/repository/UserRepo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/PersonalFinanceTrackerApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/test/java/com/NtgSummerTrainingApp/PersonalFinanceTracker/PersonalFinanceTrackerApplicationTests.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+        <option value="Enum" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Abdelrahmaan24&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Shaaamy/Personal-Finance-Tracker.git&quot;,
+    &quot;accountId&quot;: &quot;2de67094-41a2-4332-8aae-794956d1cf12&quot;
+  }
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="31NG9rk1FLfR0wy1Rbqx9r4XQwo" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;Spring Boot.PersonalFinanceTrackerApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/PC/Desktop/NTG_intern/task4&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="Personal-Finance-Tracker" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="Personal-Finance-Tracker" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PersonalFinanceTrackerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="PersonalFinanceTracker" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.NtgSummerTrainingApp.PersonalFinanceTracker.PersonalFinanceTrackerApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.23726.103" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.23726.103" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e4cf047f-a28d-44b8-8b53-c5e141d55756" name="Changes" comment="" />
+      <created>1755356968490</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1755356968490</updated>
+      <workItem from="1755356969532" duration="9758000" />
+      <workItem from="1755388440732" duration="4473000" />
+      <workItem from="1755392990285" duration="13474000" />
+      <workItem from="1755445954961" duration="20066000" />
+      <workItem from="1755608611780" duration="8366000" />
+      <workItem from="1755644567285" duration="1862000" />
+      <workItem from="1755691178621" duration="1836000" />
+      <workItem from="1755871301210" duration="1598000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
