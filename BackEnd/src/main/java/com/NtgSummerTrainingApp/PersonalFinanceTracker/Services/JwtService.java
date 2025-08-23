@@ -1,20 +1,24 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
 
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import javax.crypto.SecretKey;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
-    private final SecretKey  signingKey;
+    private final SecretKey signingKey;
     public JwtService(@Value("${jwt.secret}") String secret) {
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
@@ -22,11 +26,14 @@ public class JwtService {
      * Generate a JWT token with only username (subject)
      */
 
-    public String generateToken(String username ){
-        Map<String, Objects> claims = new HashMap<>();
+    public String generateToken(UserDetails userDetails ){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities().stream()
+                .map(auth -> auth.getAuthority().startsWith("ROLE_") ? auth.getAuthority() : "ROLE_" + auth.getAuthority())
+                .toList());
         return Jwts.builder()
                 .claims(claims)
-                .subject(username)
+                .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+jwtExpiration))
                 .signWith(signingKey)

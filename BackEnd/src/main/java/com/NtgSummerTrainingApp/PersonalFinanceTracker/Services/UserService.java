@@ -41,7 +41,8 @@ public class UserService {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
-        String token = jwtService.generateToken(user.getUsername());
+        UserPrincipal principal = new UserPrincipal(user);
+        String token = jwtService.generateToken(principal);
         return new LoginResponseDto(user.getId(),token, user.getUsername(), user.getFullName(),user.getEmail(), user.getRole().name());
 
     }
@@ -94,7 +95,7 @@ public class UserService {
             //The authentication step already loads the user using your UserDetailsService ---> ( MyUserDetailsService). You can get the authenticated user from:
             UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
             User user = userRepo.findByUsername(principal.getUsername());
-            String token = jwtService.generateToken(principal.getUsername());
+            String token = jwtService.generateToken(principal);
 
             return new LoginResponseDto(
                     user.getId(),

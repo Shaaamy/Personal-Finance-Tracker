@@ -46,21 +46,19 @@ public class JwtFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtService.validateToken(token, userDetails)) {
-                // Extract role from JWT
-                String role = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
+                List<String> roles = jwtService.extractClaim(token, claims -> claims.get("roles", List.class));
 
-                // Add ROLE_ prefix to match Spring Security
-                List<SimpleGrantedAuthority> authorities =
-                        List.of(new SimpleGrantedAuthority("ROLE_" + role));
+                List<SimpleGrantedAuthority> authorities = roles != null
+                        ? roles.stream().map(SimpleGrantedAuthority::new).toList()
+                        : List.of();
 
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, authorities);
+                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+
         }
 
         filterChain.doFilter(request, response);
