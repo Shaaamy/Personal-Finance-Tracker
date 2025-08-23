@@ -1,10 +1,7 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.CategoryService;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryRequestDto;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryResponseDto;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
 import jakarta.validation.Valid;
 import lombok.Data;
 import org.springframework.data.domain.Page;
@@ -21,31 +18,52 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createCategory(@RequestBody @Valid CategoryRequestDto categoryReq){
-        return new ResponseEntity<>( categoryService.createNewCategory(categoryReq), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse<String>> createCategory(@RequestBody @Valid CategoryRequestDto categoryReq) {
+        String result = categoryService.createNewCategory(categoryReq);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true, "Category created successfully", result));
     }
+
+
     @GetMapping("/id/{id}")
-    public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable long id){
-        return new ResponseEntity<>(categoryService.findCategoryById(id),HttpStatus.OK);
+    public ResponseEntity<ApiResponse<CategoryResponseDto>> getCategoryById(@PathVariable long id) {
+        CategoryResponseDto category = categoryService.findCategoryById(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Category fetched successfully", category));
     }
-    @GetMapping()
-    public ResponseEntity<PaginationDto<CategoryResponseDto>> getAllCategories(@ModelAttribute PaginationRequest paginationReq){
-        return new ResponseEntity<>(categoryService.findAllCategories(paginationReq),HttpStatus.OK);
+
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<PaginationDto<CategoryResponseDto>>> getAllCategories(@ModelAttribute PaginationRequest paginationReq) {
+        PaginationDto<CategoryResponseDto> categories = categoryService.findAllCategories(paginationReq);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Categories fetched successfully", categories));
     }
+
+
     @GetMapping("/name/{name}")
-    public ResponseEntity<CategoryResponseDto> getCategoryByName(@PathVariable String name){
-        return new ResponseEntity<>(categoryService.findCategoryByName(name),HttpStatus.OK);
+    public ResponseEntity<ApiResponse<CategoryResponseDto>> getCategoryByName(@PathVariable String name) {
+        CategoryResponseDto category = categoryService.findCategoryByName(name);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Category fetched successfully", category));
     }
+
+
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCategory(@Valid @RequestBody CategoryRequestDto categoryReq , @PathVariable long id){
-        return new ResponseEntity<>(categoryService.update(categoryReq,id),HttpStatus.OK);
+    public ResponseEntity<ApiResponse<String>> updateCategory(@Valid @RequestBody CategoryRequestDto categoryReq, @PathVariable long id) {
+        String result = categoryService.update(categoryReq, id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Category updated successfully", result));
     }
+
+
     @PatchMapping("/updatePartially/{id}")
-    public ResponseEntity<String> updateCategoryPartially( @RequestBody CategoryRequestDto categoryReq , @PathVariable long id){
-        return new ResponseEntity<>(categoryService.updateCategoryPartially(categoryReq,id),HttpStatus.OK);
+    public ResponseEntity<ApiResponse<String>> updateCategoryPartially(@RequestBody CategoryRequestDto categoryReq, @PathVariable long id) {
+        String result = categoryService.updateCategoryPartially(categoryReq, id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Category partially updated successfully", result));
     }
+
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable long id){
-        return new ResponseEntity<>(categoryService.delete(id),HttpStatus.OK);
+    public ResponseEntity<ApiResponse<String>> deleteCategory(@PathVariable long id) {
+        String result = categoryService.delete(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Category deleted successfully", result));
     }
 }
