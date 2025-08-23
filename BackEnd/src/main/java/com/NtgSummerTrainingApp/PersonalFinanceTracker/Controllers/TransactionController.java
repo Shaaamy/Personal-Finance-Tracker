@@ -1,10 +1,7 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
-
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TransactionService;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.TransactionDTO;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CategoryTypeEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,51 +20,76 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping("/create")
-    public ResponseEntity <TransactionDTO> addTransaction(@RequestBody TransactionDTO dto){
-        return new ResponseEntity<>(transactionService.addTransaction(dto), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<TransactionDTO> getTransaction(@PathVariable Long id) {
-        TransactionDTO dto = transactionService.getTransactionById(id);
-        return ResponseEntity.ok(dto);
-    }
-
-    @GetMapping()
-    public ResponseEntity<PaginationDto<TransactionDTO>> getAllTransactions(@ModelAttribute PaginationRequest paginationReq){
-        return new ResponseEntity<>(transactionService.getAllTransactions(paginationReq) , HttpStatus.OK);
-    }
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<TransactionDTO>> getTransactionsForUser(@PathVariable Long userId) {
-        List<TransactionDTO> transactions = transactionService.getTransactionsByUser(userId);
-        return ResponseEntity.ok(transactions); // 200 OK
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTransaction(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<TransactionDTO>> addTransaction(@RequestBody TransactionDTO dto) {
         try {
-            transactionService.deleteTransaction(id);
-            return new ResponseEntity<>("Deleted Successfully", HttpStatus.OK); // 204 No Content
-        }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            TransactionDTO saved = transactionService.addTransaction(dto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new ApiResponse<>(true, "Transaction created successfully", saved));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(false, e.getMessage(), null));
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<TransactionDTO>> getTransaction(@PathVariable Long id) {
+        try {
+            TransactionDTO dto = transactionService.getTransactionById(id);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Transaction fetched successfully", dto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>(false, e.getMessage(), null));
+        }
+    }
+
+    @GetMapping()
+    public ResponseEntity<ApiResponse<PaginationDto<TransactionDTO>>> getAllTransactions(@ModelAttribute PaginationRequest paginationReq) {
+        try {
+            PaginationDto<TransactionDTO> page = transactionService.getAllTransactions(paginationReq);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Transactions fetched successfully", page));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(false, e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ApiResponse<List<TransactionDTO>>> getTransactionsForUser(@PathVariable Long userId) {
+        try {
+            List<TransactionDTO> transactions = transactionService.getTransactionsByUser(userId);
+            return ResponseEntity.ok(new ApiResponse<>(true, "User transactions fetched successfully", transactions));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(false, e.getMessage(), null));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteTransaction(@PathVariable Long id) {
+        try {
+            transactionService.deleteTransaction(id);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Transaction deleted successfully", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, e.getMessage(), null));
+        }
+    }
 
     @GetMapping("/filter")
-    public ResponseEntity<List<TransactionDTO>> filterTransactions(
+    public ResponseEntity<ApiResponse<List<TransactionDTO>>> filterTransactions(
             @RequestParam Long userId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) CategoryTypeEnum type,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        try {
+            List<TransactionDTO> transactions =
+                    transactionService.filterTransactions(userId, categoryId, type, startDate, endDate);
 
-        List<TransactionDTO> transactions =
-                transactionService.filterTransactions(userId, categoryId, type, startDate, endDate);
-
-        return ResponseEntity.ok(transactions);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Transactions filtered successfully", transactions));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(false, e.getMessage(), null));
+        }
     }
-
-
 }
