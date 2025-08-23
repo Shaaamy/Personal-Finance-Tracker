@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.util.*;
+import java.util.function.Function;
 
 @Service
 public class JwtService {
@@ -33,7 +34,11 @@ public class JwtService {
 
     }
 
-
+    // Extract specific claim using a resolver function
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
     /**
      * Extract username (subject) from token
      */

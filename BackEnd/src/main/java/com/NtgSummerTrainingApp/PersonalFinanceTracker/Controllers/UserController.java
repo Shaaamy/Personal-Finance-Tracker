@@ -10,6 +10,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,6 +55,7 @@ public class UserController {
     //
         // get all users
     //
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllUsers(@ModelAttribute PaginationRequest paginationReq) {
             return new ResponseEntity<>(userService.getAllUsers(paginationReq),HttpStatus.OK);
