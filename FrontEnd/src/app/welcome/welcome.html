@@ -1,0 +1,28 @@
+<div class="home-container">
+  <!-- Left Section -->
+  <div class="home-left">
+    <img [src]="logoUrl" alt="Logo" class="logo" />
+
+    <h1>
+      Take Control of Your <br />
+      <span class="highlight">Finances. Effortlessly.</span>
+    </h1>
+
+    <p>
+      Track income, manage expenses, and save smarter. Finance Tracker provides
+      a clean, intuitive, and powerful platform to achieve your financial goals
+      with confidence.
+    </p>
+
+    <div class="buttons">
+<button class="btn login" (click)="goToLogin()">Login</button>
+<button class="btn signup" (click)="goTosignup()">signup</button>
+      
+    </div>
+  </div>
+
+  <!-- Right Section -->
+  <div class="home-right">
+    <img [src]="phoneUrl" alt="Finance App Preview" class="phone-img" />
+  </div>
+</div>

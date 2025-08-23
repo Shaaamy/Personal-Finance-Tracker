@@ -1,0 +1,28 @@
+<div class="signup-container">
+  <div class="signup-box">
+    <img [src]="logoUrl" alt="Logo" class="logo" />
+
+    <h2>Create Your Finance Tracker Account</h2>
+    <p>Manage your finances effortlessly.</p>
+
+    <form (ngSubmit)="onSubmit()">
+      <label for="name">Name</label>
+      <input id="name" type="text" placeholder="John Doe" required />
+
+      <label for="email">Email</label>
+      <input id="email" type="email" placeholder="john.doe@example.com" required />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="******" required />
+
+      <label for="confirmPassword">Confirm Password</label>
+      <input id="confirmPassword" type="password" placeholder="******" required />
+
+      <button type="submit" class="btn signup-btn">Sign Up</button>
+    </form>
+
+   <p class="login-text">
+  Already have an account? <a (click)="goTo()">Login</a></p>
+
+  </div>
+</div>

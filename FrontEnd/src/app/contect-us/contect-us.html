@@ -1,0 +1,51 @@
+<div class="container">
+  <header>
+    <div class="logo-container">
+      <img src="https://agency.entasher.com/Images/actualsize/2024/5/Logo_847363b7554a46b48559c222f4f9053c.png" alt="Logo" class="logo">
+      <span class="brand-text">Finance</span>
+    </div>
+    <nav>
+      <a (click)="goHome()">Home</a>
+  <a (click)="goToWelcome()">welcome</a>
+  <a (click)="goToTransaction()">Transaction</a>
+  <a (click)="goToRecurring()">Recurring Transactions</a>
+  <a (click)="goToDashboard()">Dashboard</a>
+  <a (click)="goToContact()">Contact Us</a>
+  <a (click)="goToAbout()">About</a>
+
+    </nav>
+  </header>
+
+  <section class="contact-section">
+    <h1>Get in Touch with Us</h1>
+    <p>We’re here to help and answer any question you might have. We look forward to hearing from you!</p>
+
+    <div class="contact-content">
+      <div class="contact-form">
+        <h2>Send Us a Message</h2>
+        <p>Fill out the form below and we’ll get back to you as soon as possible.</p>
+        <form>
+          <input type="text" placeholder="Your Name" required>
+          <input type="email" placeholder="your@email.com" required>
+          <input type="text" placeholder="Topic of your inquiry" required>
+          <textarea placeholder="Type your message here..."></textarea>
+          <button type="submit" class="submit-btn">Submit</button>
+        </form>
+      </div>
+      <div class="contact-info">
+        <h2>Our Office</h2>
+        <p>Find us or reach out through alternative channels.</p>
+        <p><span class="icon">📞</span> +1 (555) 123-4567</p>
+        <p><span class="icon">📧</span> info@claritynetwork.com</p>
+        <p><span class="icon">📍</span> 123 Tech Drive, Suite 400, Innovation City, CA 90210</p>
+        <p>Find us on Social Media</p>
+        <div class="social-icons">
+          <a href="#"><span class="icon">🇫</span></a>
+          <a href="#"><span class="icon">🐦</span></a>
+          <a href="#"><span class="icon">Ⓜ</span></a>
+        </div>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRvqUOWFYy5i7XMYprQFL3YvQ1puEwTNKDKw3DqtbWmh2Ioz4hB3x6Pnw&s=" alt="Office Building" class="office-image">
+      </div>
+    </div>
+  </section>
+</div>

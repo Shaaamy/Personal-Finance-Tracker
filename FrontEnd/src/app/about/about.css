@@ -1,0 +1,112 @@
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+.nav-left { display: flex; align-items: center; }
+.logo { height: 40px; }
+.brand {
+  font-size: 22px;
+  font-weight: bold;
+  margin-left: 8px;
+  color: #333;
+}
+.nav-links { list-style: none; display: flex; gap: 20px; }
+.nav-links a { text-decoration: none; color: #333; font-weight: 500; }
+.auth-buttons { display: flex; gap: 10px; }
+.login-btn, .register-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.login-btn { background: #fff; color: #e74c3c; border: 1px solid #e74c3c; }
+.register-btn { background: #e74c3c; color: #fff; }
+
+/* Container */
+.container { padding: 20px; text-align: center; }
+
+/* Hero Section */
+.hero {
+  padding: 50px 20px;
+  background: #f9f9f9;
+  position: relative;
+}
+.cover-photo {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+.hero h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+  color: #000000;
+}
+.hero p {
+  max-width: 600px;
+  margin: 0 auto;
+  color: #000000;
+  position: relative;
+  z-index: 1;
+}
+
+/* Our Story Section */
+.our-story {
+  padding: 40px 20px;
+  text-align: left;
+}
+.our-story h2 { margin-bottom: 20px; }
+.our-story p { max-width: 600px; margin: 10px auto; color: #666; }
+.story-image { max-width: 400px; margin-top: 20px; border-radius: 8px; }
+
+/* Our Team Section */
+.our-team {
+  padding: 40px 20px;
+}
+.our-team h2 { margin-bottom: 20px; }
+.team-members { display: flex; justify-content: center; gap: 20px; }
+.team-member { text-align: center; }
+.team-member img { border-radius: 50%; width: 100px; height: 100px; }
+.team-member h3 { margin: 10px 0 5px; }
+.team-member p { color: #666; font-size: 0.9em; }
+
+/* Our Values Section */
+.our-values {
+  padding: 40px 20px;
+}
+.our-values h2 { margin-bottom: 20px; }
+.values-list { display: flex; justify-content: center; gap: 20px; }
+.value-card {
+  max-width: 200px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+.value-icon { font-size: 1.5em; color: #e74c3c; }
+.value-card h3 { margin: 10px 0; }
+.value-card p { color: #666; font-size: 0.9em; }
+
+/* Call to Action Section */
+.call-to-action {
+  padding: 40px 20px;
+  background: #ffebee;
+}
+.call-to-action h2 { margin-bottom: 20px; }
+.get-started-btn {
+  background: #e74c3c;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

@@ -1,0 +1,101 @@
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-left">
+    <a href="#">
+      <img src="https://agency.entasher.com/Images/actualsize/2024/5/Logo_847363b7554a46b48559c222f4f9053c.png" alt="Logo" class="logo">
+    </a>
+    <span class="brand">Finance</span>
+  </div>
+  <ul class="nav-links">
+     <li><a (click)="goHome()">Home</a></li>
+     <li><a (click)="goToTransaction()"> Transactions</a></li>
+    <li><a (click)="goToRecurring()">Recurring Transactions</a></li>
+    <li><a (click)="goToDashboard()">Dashboard</a></li>
+    <li><a (click)="goToContact()">Contact Us</a></li>
+    <li><a (click)="goToAbout()">About</a></li>
+  </ul>
+  <button class="logout-btn">Logout</button>
+</nav>
+
+<div class="container">
+  <h2>Recurring Transactions</h2>
+
+  <!-- Summary Section -->
+  <div class="summary">
+    <div class="card expense">
+      <h3>Total Monthly Recurring Expenses (Approx.)</h3>
+      <p>{{ totalMonthlyExpenses | currency }}</p>
+    </div>
+  </div>
+
+  <!-- Recurring Transactions List -->
+  <div *ngIf="!showForm">
+    <div class="filters">
+      <button (click)="addTransaction()" class="btn-add">+ Add New Transaction</button>
+    </div>
+
+    <h3>Upcoming Recurring Transactions</h3>
+
+    <table class="transactions-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Amount</th>
+          <th>Category</th>
+          <th>Frequency</th>
+          <th>Next Occurrence</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of transactions; let i = index">
+          <td>{{ t.name }}</td>
+          <td class="red">{{ t.amount | currency }}</td>
+          <td>{{ t.category }}</td>
+          <td>{{ t.frequency }}</td>
+          <td>{{ t.nextOccurrence }}</td>
+          <td>
+            <button (click)="editTransaction(i)">✏️</button>
+            <button (click)="deleteTransaction(i)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add / Edit Recurring Transaction Form -->
+  <div *ngIf="showForm" class="form-container">
+    <h2>{{ isEdit ? 'Edit Transaction' : 'Add New Transaction' }}</h2>
+    <p>Fill in the details for your new recurring transaction.</p>
+    <form>
+      <label>Description</label>
+      <input type="text" [(ngModel)]="newTransaction.name" name="name" />
+
+      <label>Amount</label>
+      <input type="number" [(ngModel)]="newTransaction.amount" name="amount" />
+
+      <label>Category</label>
+      <input type="text" [(ngModel)]="newTransaction.category" name="category" />
+
+      <label>Frequency</label>
+      <select [(ngModel)]="newTransaction.frequency" name="frequency">
+        <option>daily </option>
+        <option>weekly </option>
+        <option>monthly </option>
+        <option>half annual </option>
+        <option>annual </option>
+        
+      </select>
+
+      <label>Next Payment Date</label>
+      <input type="date" [(ngModel)]="newTransaction.nextOccurrence" name="nextOccurrence" />
+
+      <div class="actions">
+        <button type="button" (click)="cancelForm()">Cancel</button>
+        <button type="button" class="save-btn" (click)="saveTransaction()">
+          {{ isEdit ? 'Update Transaction' : 'Save Transaction' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

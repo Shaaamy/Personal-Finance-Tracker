@@ -1,0 +1,107 @@
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-left">
+    <a href="#">
+      <img src="https://agency.entasher.com/Images/actualsize/2024/5/Logo_847363b7554a46b48559c222f4f9053c.png" alt="Logo" class="logo">
+    </a>
+    <span class="brand">Finance</span>
+  </div>
+  <ul class="nav-links">
+    <li><a (click)="goHome()">Home</a></li>
+    <li><a (click)="goToTransaction()">Transactions</a></li>
+    <li><a (click)="goToRecurring()">Recurring Transactions</a></li>
+    <li><a (click)="goToDashboard()">Dashboard</a></li>
+    <li><a (click)="goToContact()">Contact Us</a></li>
+    <li><a (click)="goToAbout()">About</a></li>
+
+
+  </ul>
+  <button class="logout-btn">Logout</button>
+</nav>
+
+<div class="container">
+  <h2>Transactions</h2>
+
+  <!-- Summary Section -->
+  <div class="summary">
+    <div class="card income">
+      <h3>Total Income</h3>
+      <p>{{ totalIncome | currency }}</p>
+    </div>
+    <div class="card expense">
+      <h3>Total Expenses</h3>
+      <p>{{ totalExpense | currency }}</p>
+    </div>
+    <div class="card balance" [ngClass]="{'profit': netBalance >= 0, 'loss': netBalance < 0}">
+      <h3>Net Balance</h3>
+      <p>{{ netBalance | currency }}</p>
+      <span>{{ status }}</span>
+    </div>
+  </div>
+
+  <!-- Transactions List -->
+  <div *ngIf="!showForm">
+    <div class="filters">
+      <select><option>Select Date Range</option></select>
+      <select><option>All Categories</option></select>
+      <select><option>All Types</option></select>
+      <button (click)="addTransaction()" class="btn-add">+ Add Transaction</button>
+    </div>
+
+    <table class="transactions-table">
+      <thead>
+        <tr>
+          <th>Date</th><th>Description</th><th>Category</th><th>Type</th><th>Amount</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of transactions; let i = index">
+          <td>{{ t.date }}</td>
+          <td>{{ t.description }}</td>
+          <td>{{ t.category }}</td>
+          <td>
+            <span class="badge" [ngClass]="t.type.toLowerCase()">{{ t.type }}</span>
+          </td>
+          <td [ngClass]="{'red': t.type==='Expense', 'green': t.type==='Income'}">
+            {{ t.amount | currency }}
+          </td>
+          <td>
+            <button (click)="editTransaction(i)">✏️</button>
+            <button (click)="deleteTransaction(i)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add / Edit Transaction Form -->
+  <div *ngIf="showForm" class="form-container">
+    <h2>{{ isEdit ? 'Edit Transaction' : 'Add New Transaction' }}</h2>
+    <form>
+      <label>Amount</label>
+      <input type="number" [(ngModel)]="newTransaction.amount" name="amount" />
+
+      <label>Type</label>
+      <select [(ngModel)]="newTransaction.type" name="type">
+        <option>Expense</option>
+        <option>Income</option>
+      </select>
+
+      <label>Category</label>
+      <input type="text" [(ngModel)]="newTransaction.category" name="category" />
+
+      <label>Date</label>
+      <input type="date" [(ngModel)]="newTransaction.date" name="date" />
+
+      <label>Description</label>
+      <textarea [(ngModel)]="newTransaction.description" name="description"></textarea>
+
+      <div class="actions">
+        <button type="button" (click)="cancelForm()">Cancel</button>
+        <button type="button" class="save-btn" (click)="saveTransaction()">
+          {{ isEdit ? 'Update Transaction' : 'Save Transaction' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
