@@ -1,6 +1,7 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.configurations;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.JwtService;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -45,6 +47,10 @@ public class JwtFilter extends OncePerRequestFilter {
             // Load user details
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
+            if (tokenBlacklistService.isTokenBlacklisted(token)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             if (jwtService.validateToken(token, userDetails)) {
                 List<String> roles = jwtService.extractClaim(token, claims -> claims.get("roles", List.class));
 

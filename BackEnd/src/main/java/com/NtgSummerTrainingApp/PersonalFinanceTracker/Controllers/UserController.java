@@ -1,6 +1,7 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.UserMapper;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TokenBlacklistService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.UserService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.LoginResponseDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     //
         // create new user
@@ -79,5 +81,17 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         return new ResponseEntity<>(userService.deleteUser(id),HttpStatus.OK);
 
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            tokenBlacklistService.blacklistToken(token);
+            return ResponseEntity.ok("Logged out successfully");
+        } else {
+            return ResponseEntity.badRequest().body("No valid token provided");
+        }
     }
 }
