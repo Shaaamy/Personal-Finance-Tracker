@@ -4,10 +4,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.UserMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.JwtService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TokenBlacklistService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.UserService;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.LoginResponseDto;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.UserDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,28 +31,33 @@ public class UserController {
         // create new user
     //
     @PostMapping("/register")
-    public ResponseEntity<LoginResponseDto> register(@RequestBody UserDto userDto) {
+    public ResponseEntity<ApiResponse<LoginResponseDto>> register(@RequestBody UserDto userDto) {
         User user = UserMapper.toEntity(userDto);
-        return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
+        LoginResponseDto response = userService.createUser(user);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true, "User registered successfully", response));
     }
+
+
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody UserDto userDto){
-        return new ResponseEntity<>(userService.login(userDto),HttpStatus.OK);
+    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@RequestBody UserDto userDto) {
+        LoginResponseDto response = userService.login(userDto);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Login successful", response));
     }
 
     //
         // update user
     //
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+    public ResponseEntity<ApiResponse<UserDto>> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
         try {
             User user = UserMapper.toEntity(userDto);
             User updatedUser = userService.updateUser(id, user);
-            return new ResponseEntity<>(UserMapper.toDTO(updatedUser), HttpStatus.OK);
-        }catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok(new ApiResponse<>(true, "User updated successfully", UserMapper.toDTO(updatedUser)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, e.getMessage(), null));
         }
-
     }
 
 
@@ -64,8 +66,9 @@ public class UserController {
     //
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<?> getAllUsers(@ModelAttribute PaginationRequest paginationReq) {
-            return new ResponseEntity<>(userService.getAllUsers(paginationReq),HttpStatus.OK);
+    public ResponseEntity<ApiResponse<PaginationDto<UserDto>>> getAllUsers(@ModelAttribute PaginationRequest paginationReq) {
+        PaginationDto<UserDto> users = userService.getAllUsers(paginationReq);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Users fetched successfully", users));
     }
 
 
@@ -73,28 +76,30 @@ public class UserController {
         // get user by id
     //
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getUserById(id),HttpStatus.OK);
+    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable Long id) {
+        UserDto userDto = userService.getUserById(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "User fetched successfully", userDto));
     }
-
 
 
     //
     // delete user
     //
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.deleteUser(id),HttpStatus.OK);
-
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Long id) {
+        String result = userService.deleteUser(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "User deleted successfully", result));
     }
 
+    // Generate refresh Token
     @PostMapping("/refresh-token")
-    public ResponseEntity<String> refreshToken(@RequestHeader("Authorization") String refreshTokenHeader) {
+    public ResponseEntity<ApiResponse<String>> refreshToken(@RequestHeader("Authorization") String refreshTokenHeader) {
         String refreshToken = refreshTokenHeader.substring(7);
 
         String tokenType = jwtService.extractClaim(refreshToken, claims -> (String) claims.get("tokenType"));
         if (!"REFRESH".equals(tokenType)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token type");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>(false, "Invalid token type", null));
         }
 
         String username = jwtService.extractUsername(refreshToken);
@@ -102,26 +107,26 @@ public class UserController {
 
         if (jwtService.validateToken(refreshToken, userDetails)) {
             String newAccessToken = jwtService.generateAccessToken(userDetails);
-            return ResponseEntity.ok(newAccessToken);
+            return ResponseEntity.ok(new ApiResponse<>(true, "New access token generated", newAccessToken));
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiResponse<>(false, "Invalid refresh token", null));
     }
 
 
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader(value = "Authorization", required = false) String authHeader,
-                                         @RequestHeader(value = "Refresh-Token", required = false) String refreshHeader) {
+    public ResponseEntity<ApiResponse<String>> logout(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestHeader(value = "Refresh-Token", required = false) String refreshHeader) {
 
         boolean anyTokenBlacklisted = false;
-
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             tokenBlacklistService.blacklistToken(authHeader.substring(7));
             anyTokenBlacklisted = true;
         }
-
 
         if (refreshHeader != null && refreshHeader.startsWith("Bearer ")) {
             tokenBlacklistService.blacklistToken(refreshHeader.substring(7));
@@ -129,9 +134,9 @@ public class UserController {
         }
 
         if (anyTokenBlacklisted) {
-            return ResponseEntity.ok("Logged out successfully");
-        }else {
-            return ResponseEntity.badRequest().body("No valid token provided");
+            return ResponseEntity.ok(new ApiResponse<>(true, "Logged out successfully", null));
+        } else {
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "No valid token provided", null));
         }
     }
 }
