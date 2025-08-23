@@ -4,6 +4,8 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import javax.crypto.SecretKey;
+
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +18,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
-    @Value("${jwt.expiration}")
-    private long jwtExpiration;
+    // Access token expires in milliseconds (e.g., 15 minutes)
+    @Value("${jwt.access-expiration}")
+    private Long jwtExpiration;
+
+    // Refresh token expires in milliseconds (e.g., 7 days)
+    @Value("${jwt.refresh-expiration}")
+    private Long refreshTokenExpiration;
+
     private final SecretKey signingKey;
     public JwtService(@Value("${jwt.secret}") String secret) {
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes());
@@ -26,7 +34,7 @@ public class JwtService {
      * Generate a JWT token with only username (subject)
      */
 
-    public String generateToken(UserDetails userDetails ){
+    public String generateAccessToken(UserDetails userDetails ){
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(auth -> auth.getAuthority().startsWith("ROLE_") ? auth.getAuthority() : "ROLE_" + auth.getAuthority())
@@ -39,6 +47,20 @@ public class JwtService {
                 .signWith(signingKey)
                 .compact();
 
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("tokenType", "REFRESH");  // add token type
+        claims.put("username", userDetails.getUsername());
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(userDetails.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                .signWith(signingKey)
+                .compact();
     }
 
     // Extract specific claim using a resolver function

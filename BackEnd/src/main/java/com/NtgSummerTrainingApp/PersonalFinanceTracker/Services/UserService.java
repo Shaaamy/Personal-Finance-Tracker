@@ -42,8 +42,9 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
         UserPrincipal principal = new UserPrincipal(user);
-        String token = jwtService.generateToken(principal);
-        return new LoginResponseDto(user.getId(),token, user.getUsername(), user.getFullName(),user.getEmail(), user.getRole().name());
+        String accessToken = jwtService.generateAccessToken(principal);
+        String refreshToken = jwtService.generateRefreshToken(principal);
+        return new LoginResponseDto(user.getId(), user.getUsername(), user.getFullName(),user.getEmail(), user.getRole().name(),accessToken,refreshToken);
 
     }
 
@@ -95,15 +96,17 @@ public class UserService {
             //The authentication step already loads the user using your UserDetailsService ---> ( MyUserDetailsService). You can get the authenticated user from:
             UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
             User user = userRepo.findByUsername(principal.getUsername());
-            String token = jwtService.generateToken(principal);
+            String accessToken = jwtService.generateAccessToken(principal);
+            String refreshToken = jwtService.generateRefreshToken(principal);
 
             return new LoginResponseDto(
                     user.getId(),
-                    token,
                     principal.getUsername(),
                     user.getFullName(), // from your User entity or principal
                     user.getEmail(),
-                    user.getRole().name()      // assuming you store a single role, or adapt to list
+                    user.getRole().name(),
+                    accessToken,
+                    refreshToken// assuming you store a single role, or adapt to list
             );        }
         throw new BadCredentialsException("Invalid username or password");
     }

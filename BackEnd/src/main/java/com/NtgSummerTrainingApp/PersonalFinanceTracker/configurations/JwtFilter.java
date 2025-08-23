@@ -41,6 +41,8 @@ public class JwtFilter extends OncePerRequestFilter {
             username = jwtService.extractUsername(token);
         }
 
+
+
         // Only set authentication if username exists and context is not already authenticated
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 

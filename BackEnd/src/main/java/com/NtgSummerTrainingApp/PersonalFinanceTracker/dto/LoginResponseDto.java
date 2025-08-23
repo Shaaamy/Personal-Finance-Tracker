@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 @Setter
 public class LoginResponseDto {
     private long id;
-    private String token;
     private String username;
     private String fullName;
     private String email;
     private String role;
+    private String accessToken;
+    private String refreshToken;
+
+
 }

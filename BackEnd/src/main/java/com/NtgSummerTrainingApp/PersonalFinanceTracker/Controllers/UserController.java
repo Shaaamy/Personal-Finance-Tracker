@@ -1,6 +1,7 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.UserMapper;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.JwtService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TokenBlacklistService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.UserService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.LoginResponseDto;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +26,9 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
+    private final JwtService jwtService;
     private final TokenBlacklistService tokenBlacklistService;
+    private final UserDetailsService userDetailsService;
 
     //
         // create new user
@@ -83,14 +88,49 @@ public class UserController {
 
     }
 
+    @PostMapping("/refresh-token")
+    public ResponseEntity<String> refreshToken(@RequestHeader("Authorization") String refreshTokenHeader) {
+        String refreshToken = refreshTokenHeader.substring(7);
+
+        String tokenType = jwtService.extractClaim(refreshToken, claims -> (String) claims.get("tokenType"));
+        if (!"REFRESH".equals(tokenType)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token type");
+        }
+
+        String username = jwtService.extractUsername(refreshToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (jwtService.validateToken(refreshToken, userDetails)) {
+            String newAccessToken = jwtService.generateAccessToken(userDetails);
+            return ResponseEntity.ok(newAccessToken);
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+    }
+
+
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+    public ResponseEntity<String> logout(@RequestHeader(value = "Authorization", required = false) String authHeader,
+                                         @RequestHeader(value = "Refresh-Token", required = false) String refreshHeader) {
+
+        boolean anyTokenBlacklisted = false;
+
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            tokenBlacklistService.blacklistToken(token);
+            tokenBlacklistService.blacklistToken(authHeader.substring(7));
+            anyTokenBlacklisted = true;
+        }
+
+
+        if (refreshHeader != null && refreshHeader.startsWith("Bearer ")) {
+            tokenBlacklistService.blacklistToken(refreshHeader.substring(7));
+            anyTokenBlacklisted = true;
+        }
+
+        if (anyTokenBlacklisted) {
             return ResponseEntity.ok("Logged out successfully");
-        } else {
+        }else {
             return ResponseEntity.badRequest().body("No valid token provided");
         }
     }
