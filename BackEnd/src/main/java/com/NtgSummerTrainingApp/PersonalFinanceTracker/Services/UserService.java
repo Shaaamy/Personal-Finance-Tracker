@@ -31,7 +31,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public User createUser(User user) {
+    public LoginResponseDto  createUser(User user) {
 
         if(userRepo.existsByUsername(user.getUsername())){
             throw new DuplicateResourceException("Username '" + user.getUsername() + "' already exists");
@@ -40,7 +40,10 @@ public class UserService {
             throw new DuplicateResourceException("Email '" + user.getEmail() + "' already exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepo.save(user);
+        userRepo.save(user);
+        String token = jwtService.generateToken(user.getUsername());
+        return new LoginResponseDto(user.getId(),token, user.getUsername(), user.getFullName(),user.getEmail(), user.getRole().name());
+
     }
 
     public User updateUser(Long id, User userDetails) {
@@ -94,9 +97,11 @@ public class UserService {
             String token = jwtService.generateToken(principal.getUsername());
 
             return new LoginResponseDto(
+                    user.getId(),
                     token,
                     principal.getUsername(),
                     user.getFullName(), // from your User entity or principal
+                    user.getEmail(),
                     user.getRole().name()      // assuming you store a single role, or adapt to list
             );        }
         throw new BadCredentialsException("Invalid username or password");

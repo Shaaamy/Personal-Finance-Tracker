@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 @Getter
 @Setter
 public class LoginResponseDto {
+    private long id;
     private String token;
     private String username;
     private String fullName;
+    private String email;
     private String role;
 }
