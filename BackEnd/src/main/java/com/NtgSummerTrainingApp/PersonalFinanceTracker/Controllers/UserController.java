@@ -85,6 +85,7 @@ public class UserController {
     //
     // delete user
     //
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Long id) {
         String result = userService.deleteUser(id);
@@ -92,6 +93,7 @@ public class UserController {
     }
 
     // Generate refresh Token
+
     @PostMapping("/refresh-token")
     public ResponseEntity<ApiResponse<String>> refreshToken(@RequestHeader("Authorization") String refreshTokenHeader) {
         String refreshToken = refreshTokenHeader.substring(7);
