@@ -40,7 +40,7 @@ public class UserService {
     private final TokenBlacklistService tokenBlacklistService;
     private final PasswordResetTokenRepository tokenRepository;
     private final MyUserDetailsService userDetailsService;
-//    private final EmailService emailService;
+    private final EmailService emailService;
     public LoginResponseDto  createUser(User user) {
 
         if(userRepo.existsByUsername(user.getUsername())){
@@ -160,35 +160,35 @@ public class UserService {
     }
 
 
-//    public String forgotPassword(String email) {
-//        User user = userRepo.findByEmail(email)
-//                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-//
-//        PasswordResetToken resetToken = new PasswordResetToken();
-//        resetToken.setToken(UUID.randomUUID().toString());
-//        resetToken.setUser(user);
-//        resetToken.setExpiryDate(LocalDateTime.now().plusHours(1)); // token valid 1 hour
-//
-//        tokenRepository.save(resetToken);
-//
-//        // Send email
-//        emailService.sendPasswordResetEmail(user.getEmail(), resetToken.getToken());
-//
-//        return resetToken.getToken();
-//    }
+    public String forgotPassword(String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-//    public void resetPassword(String token, String newPassword) {
-//        PasswordResetToken resetToken = tokenRepository.findByToken(token)
-//                .orElseThrow(() -> new RuntimeException("Invalid password reset token"));
-//
-//        if (resetToken.getExpiryDate().isBefore(java.time.LocalDateTime.now())) {
-//            throw new RuntimeException("Password reset token has expired");
-//        }
-//
-//        User user = resetToken.getUser();
-//        user.setPassword(passwordEncoder.encode(newPassword));
-//        userRepo.save(user);
-//
-//        tokenRepository.delete(resetToken); // invalidate token
-//    }
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setToken(UUID.randomUUID().toString());
+        resetToken.setUser(user);
+        resetToken.setExpiryDate(LocalDateTime.now().plusHours(1)); // token valid 1 hour
+
+        tokenRepository.save(resetToken);
+
+        // Send email
+        emailService.sendPasswordResetEmail(user.getEmail(), resetToken.getToken());
+
+        return resetToken.getToken();
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid password reset token"));
+
+        if (resetToken.getExpiryDate().isBefore(java.time.LocalDateTime.now())) {
+            throw new RuntimeException("Password reset token has expired");
+        }
+
+        User user = resetToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
+
+        tokenRepository.delete(resetToken); // invalidate token
+    }
 }
