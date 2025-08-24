@@ -115,19 +115,19 @@ public class UserController {
         }
     }
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestParam String email) {
-        String token = userService.forgotPassword(email);
-        return ResponseEntity.ok(new ApiResponse<>(true,
-                "Password reset token generated. Check email for token.", token));
-    }
-
-    @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse<String>> resetPassword(@RequestParam String token,
-                                                             @RequestParam String newPassword) {
-        userService.resetPassword(token, newPassword);
-        return ResponseEntity.ok(
-                new ApiResponse<>(true, "Password has been reset successfully", null)
-        );
-    }
+//    @PostMapping("/forgot-password")
+//    public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestParam String email) {
+//        String token = userService.forgotPassword(email);
+//        return ResponseEntity.ok(new ApiResponse<>(true,
+//                "Password reset token generated. Check email for token.", token));
+//    }
+//
+//    @PostMapping("/reset-password")
+//    public ResponseEntity<ApiResponse<String>> resetPassword(@RequestParam String token,
+//                                                             @RequestParam String newPassword) {
+//        userService.resetPassword(token, newPassword);
+//        return ResponseEntity.ok(
+//                new ApiResponse<>(true, "Password has been reset successfully", null)
+//        );
+//    }
 }
