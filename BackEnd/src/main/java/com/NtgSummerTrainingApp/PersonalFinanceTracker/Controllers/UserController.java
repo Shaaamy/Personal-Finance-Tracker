@@ -105,14 +105,19 @@ public class UserController {
             @RequestHeader(value = "Authorization", required = false) String authHeader,
             @RequestHeader(value = "Refresh-Token", required = false) String refreshHeader) {
 
-        boolean success = userService.logout(authHeader, refreshHeader);
+        String logoutStatus = userService.logout(authHeader, refreshHeader);
 
-        if (success) {
-            return ResponseEntity.ok(new ApiResponse<>(true, "Logged out successfully", null));
-        } else {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>(false, "No valid token provided", null));
-        }
+        return switch (logoutStatus) {
+            case "Logout successful" -> ResponseEntity.ok(
+                    new ApiResponse<>(true, "Logged out successfully", null)
+            );
+            case "Already logged out" -> ResponseEntity.ok(
+                    new ApiResponse<>(true, "Already logged out", null)
+            );
+            default -> ResponseEntity.badRequest().body(
+                    new ApiResponse<>(false, "No valid token provided", null)
+            );
+        };
     }
 
     @PostMapping("/forgot-password")

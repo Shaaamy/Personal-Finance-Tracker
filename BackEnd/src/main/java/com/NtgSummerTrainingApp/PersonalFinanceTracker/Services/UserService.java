@@ -143,22 +143,38 @@ public class UserService {
         return jwtService.generateAccessToken(userDetails);
     }
 
-    public boolean logout(String authHeader, String refreshHeader) {
-        boolean anyTokenBlacklisted = false;
+    public String logout(String authHeader, String refreshHeader) {
+        boolean alreadyLoggedOut = false;
+        boolean newlyLoggedOut = false;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            tokenBlacklistService.blacklistToken(authHeader.substring(7));
-            anyTokenBlacklisted = true;
+            String accessToken = authHeader.substring(7);
+            if (tokenBlacklistService.isTokenBlacklisted(accessToken)) {
+                alreadyLoggedOut = true;
+            } else {
+                tokenBlacklistService.blacklistToken(accessToken);
+                newlyLoggedOut = true;
+            }
         }
 
         if (refreshHeader != null && refreshHeader.startsWith("Bearer ")) {
-            tokenBlacklistService.blacklistToken(refreshHeader.substring(7));
-            anyTokenBlacklisted = true;
+            String refreshToken = refreshHeader.substring(7);
+            if (tokenBlacklistService.isTokenBlacklisted(refreshToken)) {
+                alreadyLoggedOut = true;
+            } else {
+                tokenBlacklistService.blacklistToken(refreshToken);
+                newlyLoggedOut = true;
+            }
         }
 
-        return anyTokenBlacklisted;
+        if (alreadyLoggedOut && !newlyLoggedOut) {
+            return "Already logged out";
+        } else if (newlyLoggedOut) {
+            return "Logout successful";
+        } else {
+            return "No valid token provided";
+        }
     }
-
 
     public String forgotPassword(String email) {
         User user = userRepo.findByEmail(email)
