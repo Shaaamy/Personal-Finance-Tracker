@@ -38,9 +38,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-            username = jwtService.extractUsername(token);
-        }
 
+            String tokenType;
+            try {
+                tokenType = jwtService.extractClaim(token, claims -> (String) claims.get("tokenType"));
+            } catch (Exception e) {
+                tokenType = "ACCESS"; // Default if missing
+            }
+
+            username = jwtService.extractUsername(token);
+
+            // Block refresh tokens except for the refresh endpoint
+            if ("REFRESH".equals(tokenType) && !request.getRequestURI().contains("/user/refresh-token")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
 
 
         // Only set authentication if username exists and context is not already authenticated

@@ -36,6 +36,7 @@ public class JwtService {
 
     public String generateAccessToken(UserDetails userDetails ){
         Map<String, Object> claims = new HashMap<>();
+        claims.put("tokenType", "ACCESS");
         claims.put("roles", userDetails.getAuthorities().stream()
                 .map(auth -> auth.getAuthority().startsWith("ROLE_") ? auth.getAuthority() : "ROLE_" + auth.getAuthority())
                 .toList());
@@ -43,7 +44,7 @@ public class JwtService {
                 .claims(claims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+jwtExpiration))
+                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(signingKey)
                 .compact();
 
