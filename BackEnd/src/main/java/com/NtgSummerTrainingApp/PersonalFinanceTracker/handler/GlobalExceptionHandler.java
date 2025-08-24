@@ -1,5 +1,6 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.handler;
 
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.ILoggerFactory;
@@ -61,6 +62,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
         ErrorResponse response = new ErrorResponse ("Invalid username or password" , "AUTH_ERROR");
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<ApiResponse<String>> handleTokenException(TokenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiResponse<>(false, ex.getMessage(), null));
     }
 
     @ExceptionHandler(Exception.class)

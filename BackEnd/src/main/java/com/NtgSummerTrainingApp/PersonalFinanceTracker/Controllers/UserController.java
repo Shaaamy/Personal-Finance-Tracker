@@ -93,52 +93,25 @@ public class UserController {
     }
 
     // Generate refresh Token
-
     @PostMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<String>> refreshToken(@RequestHeader("Authorization") String refreshTokenHeader) {
-        String refreshToken = refreshTokenHeader.substring(7);
-
-        String tokenType = jwtService.extractClaim(refreshToken, claims -> (String) claims.get("tokenType"));
-        if (!"REFRESH".equals(tokenType)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse<>(false, "Invalid token type", null));
-        }
-
-        String username = jwtService.extractUsername(refreshToken);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-        if (jwtService.validateToken(refreshToken, userDetails)) {
-            String newAccessToken = jwtService.generateAccessToken(userDetails);
-            return ResponseEntity.ok(new ApiResponse<>(true, "New access token generated", newAccessToken));
-        }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ApiResponse<>(false, "Invalid refresh token", null));
+    public ResponseEntity<ApiResponse<String>> refreshToken(
+            @RequestHeader("Authorization") String refreshTokenHeader) {
+        String newAccessToken = userService.refreshToken(refreshTokenHeader);
+        return ResponseEntity.ok(new ApiResponse<>(true, "New access token generated", newAccessToken));
     }
-
-
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(
             @RequestHeader(value = "Authorization", required = false) String authHeader,
             @RequestHeader(value = "Refresh-Token", required = false) String refreshHeader) {
 
-        boolean anyTokenBlacklisted = false;
+        boolean success = userService.logout(authHeader, refreshHeader);
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            tokenBlacklistService.blacklistToken(authHeader.substring(7));
-            anyTokenBlacklisted = true;
-        }
-
-        if (refreshHeader != null && refreshHeader.startsWith("Bearer ")) {
-            tokenBlacklistService.blacklistToken(refreshHeader.substring(7));
-            anyTokenBlacklisted = true;
-        }
-
-        if (anyTokenBlacklisted) {
+        if (success) {
             return ResponseEntity.ok(new ApiResponse<>(true, "Logged out successfully", null));
         } else {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "No valid token provided", null));
+            return ResponseEntity.badRequest()
+                    .body(new ApiResponse<>(false, "No valid token provided", null));
         }
     }
 }

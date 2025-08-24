@@ -7,6 +7,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.UserDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.DuplicateResourceException;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.TokenException;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
@@ -18,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-
+    private final TokenBlacklistService tokenBlacklistService;
+    private final MyUserDetailsService userDetailsService;
     public LoginResponseDto  createUser(User user) {
 
         if(userRepo.existsByUsername(user.getUsername())){
@@ -109,5 +112,43 @@ public class UserService {
                     refreshToken// assuming you store a single role, or adapt to list
             );        }
         throw new BadCredentialsException("Invalid username or password");
+    }
+
+    public String refreshToken(String refreshTokenHeader) {
+        if (refreshTokenHeader == null || !refreshTokenHeader.startsWith("Bearer ")) {
+            throw new TokenException("No valid token provided");
+        }
+
+        String refreshToken = refreshTokenHeader.substring(7);
+        String tokenType = jwtService.extractClaim(refreshToken, claims -> (String) claims.get("tokenType"));
+
+        if (!"REFRESH".equals(tokenType)) {
+            throw new TokenException("Invalid token type");
+        }
+
+        String username = jwtService.extractUsername(refreshToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        if (!jwtService.validateToken(refreshToken, userDetails)) {
+            throw new TokenException("Invalid refresh token");
+        }
+
+        return jwtService.generateAccessToken(userDetails);
+    }
+
+    public boolean logout(String authHeader, String refreshHeader) {
+        boolean anyTokenBlacklisted = false;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            tokenBlacklistService.blacklistToken(authHeader.substring(7));
+            anyTokenBlacklisted = true;
+        }
+
+        if (refreshHeader != null && refreshHeader.startsWith("Bearer ")) {
+            tokenBlacklistService.blacklistToken(refreshHeader.substring(7));
+            anyTokenBlacklisted = true;
+        }
+
+        return anyTokenBlacklisted;
     }
 }
