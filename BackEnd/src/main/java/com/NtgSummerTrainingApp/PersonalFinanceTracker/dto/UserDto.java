@@ -37,6 +37,7 @@ public class UserDto {
     private String password;
 
     private RoleEnum role;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

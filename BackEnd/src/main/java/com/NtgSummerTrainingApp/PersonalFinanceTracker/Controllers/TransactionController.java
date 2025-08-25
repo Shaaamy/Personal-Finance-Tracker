@@ -21,6 +21,7 @@ import java.util.List;
 @RequestMapping("transaction")
 @RequiredArgsConstructor
 @Validated
+@CrossOrigin(origins = "http://localhost:4200")
 public class TransactionController {
 
     private final TransactionService transactionService;

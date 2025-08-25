@@ -49,7 +49,8 @@ public class SecurityConfig {
                                 ,"/user/logout","/user/forgot-password"
                                 ,"/user/reset-password")
                         .permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
+                        )
 
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->

@@ -20,10 +20,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/recurring-transactions")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class RecurringTransactionController {
 
     private final RecurringTransactionService recurringTransactionService;
-    private final JwtService jwtService;
 
     @PostMapping()
     public ResponseEntity<ApiResponse<RecurringTransactionDto>> createRecurringTransaction(

@@ -18,6 +18,7 @@ import java.time.LocalDate;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecurringTransactionDto {
+
     private Long id;
 
     @NotNull(message = "Amount is required")
@@ -37,8 +38,11 @@ public class RecurringTransactionDto {
     private LocalDate endDate;
 
     @NotNull(message = "Category ID is required")
+
+    @NotNull(message = "User ID is required")
+    private Long userId;
     private Long categoryId;
-    private Long userId; // populated by service, no validation
+
     private String categoryName; // populated by service, no validation
 
     @Size(max = 500, message = "Description can be at most 500 characters")

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 @Validated
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final UserService userService;
@@ -32,7 +33,7 @@ public class UserController {
         // create new user
     //
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<LoginResponseDto>> register(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<ApiResponse<LoginResponseDto>> register( @RequestBody UserDto userDto) {
         User user = UserMapper.toEntity(userDto);
         LoginResponseDto response = userService.createUser(user);
         return ResponseEntity
@@ -50,14 +51,14 @@ public class UserController {
     //
         // update user
     //
-    @PutMapping
-    public ResponseEntity<ApiResponse<UserDto>> updateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,@Valid @RequestBody UserDto userDto) {
-            Long loggedInUserId = userPrincipal.getUser().getId();
-            userDto.setId(loggedInUserId);
-            User user = UserMapper.toEntity(userDto);
-            User updatedUser = userService.updateUser(loggedInUserId, user);
-            return ResponseEntity.ok(new ApiResponse<>(true, "User updated successfully", UserMapper.toDTO(updatedUser)));
-    }
+//    @PutMapping
+//    public ResponseEntity<ApiResponse<UserDto>> updateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,@Valid @RequestBody UserDto userDto) {
+//            Long loggedInUserId = userPrincipal.getUser().getId();
+//            userDto.setId(loggedInUserId);
+//            User user = UserMapper.toEntity(userDto);
+//            User updatedUser = userService.updateUser(loggedInUserId, user);
+//            return ResponseEntity.ok(new ApiResponse<>(true, "User updated successfully", UserMapper.toDTO(updatedUser)));
+//    }
 
 
     //

@@ -27,7 +27,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
+    @Column
     private BigDecimal balance = BigDecimal.ZERO;
 
     @Column(nullable = false,unique = true)
@@ -48,8 +48,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RoleEnum role;
+    private RoleEnum role = RoleEnum.USER;
 
 
     @ManyToMany

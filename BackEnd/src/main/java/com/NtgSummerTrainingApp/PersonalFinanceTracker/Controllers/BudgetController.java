@@ -3,7 +3,6 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.BudgetService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.ApiResponse;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.BudgetDto;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 @PreAuthorize("hasAnyRole('USER','ADMIN')")
+@CrossOrigin(origins = "http://localhost:4200")
 public class BudgetController {
 
     private final BudgetService budgetService;
