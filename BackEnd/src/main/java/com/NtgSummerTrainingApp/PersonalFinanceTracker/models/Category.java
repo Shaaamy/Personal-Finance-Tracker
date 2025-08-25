@@ -35,7 +35,6 @@ public class Category {
 
 
     @ManyToMany(mappedBy = "categories")
-    @JsonBackReference
     private Set<User> users;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
@@ -56,6 +55,4 @@ public class Category {
         this.budgets = budgets;
         this.recurringTransactions = recurringTransactions;
     }
-
-
 }

@@ -34,14 +34,14 @@ public class Transaction {
     @Column(nullable = false)
     private CurrencyType currency;
 
+    @Column(nullable = false)
     private LocalDate date;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id")
-    @JsonBackReference
     private User user;
 
     @ManyToOne

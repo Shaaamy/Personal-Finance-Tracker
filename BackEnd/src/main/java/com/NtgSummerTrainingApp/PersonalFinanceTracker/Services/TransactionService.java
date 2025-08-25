@@ -10,6 +10,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryReposi
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.TransactionRepo;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.UserRepo;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,11 +18,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 
 @Service
+@Transactional
 public class TransactionService {
 
     @Autowired
@@ -38,26 +41,54 @@ public class TransactionService {
         this.transactionRepo = transactionRepo;
     }
 
-    public TransactionDTO addTransaction(TransactionDTO dto) {
-        Transaction transaction = new Transaction();
 
+    // add transaction
+    public TransactionDTO addTransaction(TransactionDTO dto) {
+        if (dto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Transaction amount must be greater than zero");
+        }
+
+//        if (dto.getType() == null ||
+//                (!dto.getType().equalsIgnoreCase("EXPENSE") && !dto.getType().equalsIgnoreCase("INCOME"))) {
+//            throw new IllegalArgumentException("Transaction type must be either INCOME or EXPENSE");
+//        }
+//
+//        if (dto.getCurrency() == null || dto.getCurrency().isEmpty()) {
+//            throw new IllegalArgumentException("Currency is required");
+//        }
+
+        if (dto.getDate() == null) {
+            throw new IllegalArgumentException("Transaction date is required");
+        }
+
+        User user = userRepo.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Category category = categoryRepo.findById(dto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        Transaction transaction = new Transaction();
         transaction.setAmount(dto.getAmount());
         transaction.setType(dto.getType());
         transaction.setDescription(dto.getDescription());
         transaction.setCurrency(dto.getCurrency());
         transaction.setDate(dto.getDate());
-
-        User user = userRepo.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
         transaction.setUser(user);
-
-        Category category = categoryRepo.findById(dto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
         transaction.setCategory(category);
+
+        // Handle balance updates safely
+        if (transaction.getType() == CategoryTypeEnum.EXPENSE) {
+            user.setBalance(user.getBalance().subtract(transaction.getAmount()));
+        } else if (transaction.getType() == CategoryTypeEnum.INCOME) {
+            user.setBalance(user.getBalance().add(transaction.getAmount()));
+        }
+
+        userRepo.save(user);
 
         Transaction saved = transactionRepo.save(transaction);
         return TransactionMapper.toDTO(saved);
     }
+
 
     // Get all transactions
     public PaginationDto<TransactionDTO> getAllTransactions(PaginationRequest paginationReq){

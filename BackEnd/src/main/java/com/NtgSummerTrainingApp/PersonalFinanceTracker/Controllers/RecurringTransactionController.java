@@ -20,8 +20,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/recurring-transactions")
 @RequiredArgsConstructor
-@Validated
-@PreAuthorize("hasAnyRole('USER','ADMIN')")
 public class RecurringTransactionController {
 
     private final RecurringTransactionService recurringTransactionService;

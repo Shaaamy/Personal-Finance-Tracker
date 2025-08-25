@@ -2,6 +2,8 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.dto;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CategoryTypeEnum;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.FrequencyEnum;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -14,11 +16,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecurringTransactionDto {
     private Long id;
 
     @NotNull(message = "Amount is required")
-    @DecimalMin(value = "0.01", message = "Amount must be greater than 0")
+    @DecimalMin(value = "0.01", inclusive = true, message = "Amount must be greater than 0")
     private BigDecimal amount;
 
     @NotNull(message = "Transaction type is required")
@@ -27,13 +30,16 @@ public class RecurringTransactionDto {
     @NotNull(message = "Frequency is required")
     private FrequencyEnum frequency;
 
+    @FutureOrPresent(message = "Start date cannot be in the past")
     private LocalDate startDate;
 
+    @Future(message = "End date must be in the future")
     private LocalDate endDate;
 
-    private Long userId; // will be overridden from token, no validation needed
-
     @NotNull(message = "Category ID is required")
+
+    @NotNull(message = "User ID is required")
+    private Long userId;
     private Long categoryId;
 
     private String categoryName; // populated by service, no validation
