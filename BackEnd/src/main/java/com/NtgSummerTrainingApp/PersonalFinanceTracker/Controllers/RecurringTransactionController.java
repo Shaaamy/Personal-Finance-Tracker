@@ -1,11 +1,18 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.JwtService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.RecurringTransactionService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.ApiResponse;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.RecurringTransactionDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,22 +20,31 @@ import java.util.List;
 @RestController
 @RequestMapping("/recurring-transactions")
 @RequiredArgsConstructor
+@Validated
+@PreAuthorize("hasAnyRole('USER','ADMIN')")
 public class RecurringTransactionController {
 
     private final RecurringTransactionService recurringTransactionService;
+    private final JwtService jwtService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<RecurringTransactionDto>> createRecurringTransaction(
-            @RequestBody RecurringTransactionDto dto) {
+            @Valid @RequestBody RecurringTransactionDto dto,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-        RecurringTransactionDto saved = recurringTransactionService.createRecurringTransaction(dto);
+        long loggedInUserId = userPrincipal.getUser().getId();// Long type
+        // Override any userId passed in the request to prevent privilege escalation
+        dto.setUserId(loggedInUserId);
+        RecurringTransactionDto createdTransaction = recurringTransactionService.createRecurringTransaction(dto,loggedInUserId);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(true, "Recurring transaction created successfully", saved));
+                .body(new ApiResponse<>(true, "Recurring transaction created successfully", createdTransaction));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<List<RecurringTransactionDto>>> getAllByUser(@PathVariable Long userId) {
-        List<RecurringTransactionDto> list = recurringTransactionService.getAllByUser(userId);
+    @GetMapping()
+    public ResponseEntity<ApiResponse<List<RecurringTransactionDto>>> getAllByUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        long loggedInUserId = userPrincipal.getUser().getId();// Long type
+        List<RecurringTransactionDto> list = recurringTransactionService.getAllByUser(loggedInUserId);
         return ResponseEntity.ok(new ApiResponse<>(true, "Recurring transactions fetched successfully", list));
     }
 
@@ -36,25 +52,24 @@ public class RecurringTransactionController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> update(
             @PathVariable Long id,
-            @RequestBody RecurringTransactionDto dto) {
-        try {
-            RecurringTransactionDto updated = recurringTransactionService.update(id, dto);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Recurring transaction updated successfully", updated));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(false, e.getMessage(), null));
-        }
+            @Valid @RequestBody RecurringTransactionDto dto,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        long loggedInUserId = userPrincipal.getUser().getId();
+        RecurringTransactionDto updated = recurringTransactionService.update(id, dto, loggedInUserId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Recurring transaction updated successfully", updated));
     }
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<?>> delete(@PathVariable Long id) {
-        try {
-            recurringTransactionService.delete(id);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Recurring transaction deleted successfully", null));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(false, e.getMessage(), null));
-        }
+    @PatchMapping("/deactivate/{id}")
+    public ResponseEntity<ApiResponse<RecurringTransactionDto>> deactivateRecurringTransaction(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        long loggedInUserId = userPrincipal.getUser().getId();
+        RecurringTransactionDto updated = recurringTransactionService.update(id,
+                RecurringTransactionDto.builder().isActive(false).build(),
+                loggedInUserId);
+
+        return ResponseEntity.ok(new ApiResponse<>(true,
+                "Recurring transaction deactivated successfully", updated));
     }
 }

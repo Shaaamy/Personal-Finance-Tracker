@@ -7,6 +7,7 @@ import org.slf4j.ILoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,8 +16,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+    // Handle invalid JSON / Enum parsing
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        ErrorResponse error = new ErrorResponse("Invalid input: " + ex.getMostSpecificCause().getMessage() , "BAD_REQUEST");
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+        @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex){
         ErrorResponse error = new ErrorResponse(
                 ex.getMessage() != null ? ex.getMessage() : "Requested entity not found",

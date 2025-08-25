@@ -17,6 +17,8 @@ public class RecurringTransactionMapper {
                 .startDate(transaction.getStartDate())
                 .endDate(transaction.getEndDate())
                 .description(transaction.getDescription())
+                .isActive(transaction.getActive() != null ? transaction.getActive() : Boolean.FALSE) // default false
+                .nextDueDate(transaction.getNextDueDate())
                 .userId(transaction.getUser() != null ? transaction.getUser().getId() : null)
                 .categoryId(transaction.getCategory() != null ? transaction.getCategory().getId() : null)
                 .categoryName(transaction.getCategory() != null ? transaction.getCategory().getName() : null)
@@ -34,6 +36,9 @@ public class RecurringTransactionMapper {
         transaction.setStartDate(dto.getStartDate());
         transaction.setEndDate(dto.getEndDate());
         transaction.setDescription(dto.getDescription());
+        transaction.setActive(dto.getIsActive() != null ? dto.getIsActive() : Boolean.TRUE);
+        transaction.setNextDueDate(dto.getNextDueDate() != null ? dto.getNextDueDate() : dto.getStartDate());
         return transaction;
     }
+
 }

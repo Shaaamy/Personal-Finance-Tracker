@@ -1,6 +1,9 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -20,39 +23,50 @@ public class RecurringTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Amount is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Amount must be greater than 0")
     @Column(nullable = false)
     private BigDecimal amount;
 
+    @Size(max = 255, message = "Description cannot exceed 255 characters")
     private String description;
 
+    @NotNull(message = "Transaction type is required")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CategoryTypeEnum type;
 
+    @NotNull(message = "Frequency is required")
     @Enumerated(EnumType.STRING)
     private FrequencyEnum frequency;
 
-    Boolean active = true;
+    @NotNull(message = "Active status is required")
+    private Boolean active = true;
 
+    @NotNull(message = "Start date is required")
     private LocalDate startDate;
+
+    @NotNull(message = "End date is required")
     private LocalDate endDate;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "category_id")
     private Category category;
 
     private LocalDate nextDueDate;
 
     public boolean isDueToday() {
-        return LocalDate.now().isEqual(this.nextDueDate);
+        return nextDueDate != null && LocalDate.now().isEqual(this.nextDueDate);
     }
 
 
     public void updateNextDueDate() {
+        if (nextDueDate == null || frequency == null) return;
+
         switch (this.frequency) {
             case DAILY -> this.nextDueDate = this.nextDueDate.plusDays(1);
             case WEEKLY -> this.nextDueDate = this.nextDueDate.plusWeeks(1);
