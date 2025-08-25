@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse("Invalid input: " + ex.getMostSpecificCause().getMessage() , "BAD_REQUEST");
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
-        @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex){
         ErrorResponse error = new ErrorResponse(
                 ex.getMessage() != null ? ex.getMessage() : "Requested entity not found",

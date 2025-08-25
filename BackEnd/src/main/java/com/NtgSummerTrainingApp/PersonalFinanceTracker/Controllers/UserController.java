@@ -6,12 +6,16 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TokenBlacklistSe
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.UserService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,18 +24,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
     private final UserService userService;
-    private final JwtService jwtService;
-    private final TokenBlacklistService tokenBlacklistService;
-    private final UserDetailsService userDetailsService;
-
     //
         // create new user
     //
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<LoginResponseDto>> register(@RequestBody UserDto userDto) {
+    public ResponseEntity<ApiResponse<LoginResponseDto>> register(@Valid @RequestBody UserDto userDto) {
         User user = UserMapper.toEntity(userDto);
         LoginResponseDto response = userService.createUser(user);
         return ResponseEntity
@@ -41,23 +42,21 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@RequestBody UserDto userDto) {
-        LoginResponseDto response = userService.login(userDto);
+    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
+        LoginResponseDto response = userService.login(loginRequestDto);
         return ResponseEntity.ok(new ApiResponse<>(true, "Login successful", response));
     }
 
     //
         // update user
     //
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserDto>> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        try {
+    @PutMapping
+    public ResponseEntity<ApiResponse<UserDto>> updateUser(@AuthenticationPrincipal UserPrincipal userPrincipal,@Valid @RequestBody UserDto userDto) {
+            Long loggedInUserId = userPrincipal.getUser().getId();
+            userDto.setId(loggedInUserId);
             User user = UserMapper.toEntity(userDto);
-            User updatedUser = userService.updateUser(id, user);
+            User updatedUser = userService.updateUser(loggedInUserId, user);
             return ResponseEntity.ok(new ApiResponse<>(true, "User updated successfully", UserMapper.toDTO(updatedUser)));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, e.getMessage(), null));
-        }
     }
 
 
@@ -75,6 +74,7 @@ public class UserController {
     //
         // get user by id
     //
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable Long id) {
         UserDto userDto = userService.getUserById(id);

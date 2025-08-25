@@ -2,10 +2,7 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.PaginationMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.UserMapper;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.LoginResponseDto;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.UserDto;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.DuplicateResourceException;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.TokenException;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
@@ -98,9 +95,9 @@ public class UserService {
         return "User with id " +id+" is deleted successfully";
     }
 
-    public LoginResponseDto login(UserDto userDto) {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto ) {
         Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
+                .authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword()));
         if (authentication.isAuthenticated()) {
             //Fetching the user twice is redundant
             //The authentication step already loads the user using your UserDetailsService ---> ( MyUserDetailsService). You can get the authenticated user from:

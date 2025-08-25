@@ -37,11 +37,8 @@ public class RecurringTransactionDto {
     private LocalDate endDate;
 
     @NotNull(message = "Category ID is required")
-
-    @NotNull(message = "User ID is required")
-    private Long userId;
     private Long categoryId;
-
+    private Long userId; // populated by service, no validation
     private String categoryName; // populated by service, no validation
 
     @Size(max = 500, message = "Description can be at most 500 characters")

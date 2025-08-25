@@ -10,7 +10,9 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.BudgetRepo;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryRepository;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.TransactionRepo;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.UserRepo;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,7 +28,10 @@ public class BudgetService {
     private final TransactionRepo transactionRepository;
 
 
-    public BudgetDto setBudget(BudgetDto dto) {
+    public BudgetDto setBudget(long loggedInUserId,BudgetDto dto) {
+        if (dto.getUserId() != loggedInUserId) {
+            throw new AccessDeniedException("You can only set budget for yourself");
+        }
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Category category = categoryRepository.findById(dto.getCategoryId())
@@ -48,8 +53,8 @@ public class BudgetService {
     }
 
 
-    public BigDecimal getSpendingForBudget(Long userId, Long categoryId, Integer month, Integer year) {
-        List<Transaction> transactions = transactionRepository.findByUserId(userId).stream()
+    public BigDecimal getSpendingForBudget(Long loggedInUserId, Long categoryId, Integer month, Integer year) {
+        List<Transaction> transactions = transactionRepository.findByUserId(loggedInUserId).stream()
                 .filter(t -> t.getCategory().getId().equals(categoryId)
                         && t.getDate().getMonthValue() == month
                         && t.getDate().getYear() == year
@@ -61,20 +66,20 @@ public class BudgetService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public List<BudgetDto> getAllBudgetsForUser(Long userId) {
-        return budgetRepository.findByUserId(userId)
+    public List<BudgetDto> getAllBudgetsForUser(Long loggedInUserId) {
+        return budgetRepository.findByUserId(loggedInUserId)
                 .stream()
                 .map(BudgetMapper::toDTO)
                 .toList();
     }
 
 
-    public void deleteBudgetForUser(Long userId, Long budgetId) {
+    public void deleteBudgetForUser(Long loggedInUserId, Long budgetId) {
         Budget budget = budgetRepository.findById(budgetId)
-                .orElseThrow(() -> new RuntimeException("Budget not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Budget not found"));
 
-        if (budget.getUser().getId() != (userId)) {
-            throw new RuntimeException("This budget does not belong to the user");
+        if (budget.getUser().getId() != (loggedInUserId)) {
+            throw new EntityNotFoundException("This budget does not belong to the user");
         }
 
         budgetRepository.delete(budget);

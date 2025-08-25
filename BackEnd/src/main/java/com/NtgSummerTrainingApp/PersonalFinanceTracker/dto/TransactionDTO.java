@@ -29,6 +29,7 @@ public class TransactionDTO {
     @NotNull(message = "currency is required")
     private CurrencyType currency;
 
+    @NotNull(message = "Transaction date is required")
     private LocalDate date;
     private LocalDateTime createdAt;
 

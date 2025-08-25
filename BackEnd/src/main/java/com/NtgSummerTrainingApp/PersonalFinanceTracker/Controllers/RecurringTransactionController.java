@@ -25,7 +25,7 @@ public class RecurringTransactionController {
     private final RecurringTransactionService recurringTransactionService;
     private final JwtService jwtService;
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<ApiResponse<RecurringTransactionDto>> createRecurringTransaction(
             @Valid @RequestBody RecurringTransactionDto dto,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {

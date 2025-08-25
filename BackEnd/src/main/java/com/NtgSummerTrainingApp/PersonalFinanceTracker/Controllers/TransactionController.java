@@ -4,12 +4,14 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TransactionServi
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CategoryTypeEnum;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,85 +20,63 @@ import java.util.List;
 @RestController
 @RequestMapping("transaction")
 @RequiredArgsConstructor
+@Validated
 public class TransactionController {
 
     private final TransactionService transactionService;
 
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<TransactionDTO>> addTransaction(@RequestBody TransactionDTO dto, @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        try {
-            Long LoggedInUserId = userPrincipal.getUser().getId();
-            dto.setUserId(LoggedInUserId);
-            TransactionDTO saved = transactionService.addTransaction(dto, LoggedInUserId);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new ApiResponse<>(true, "Transaction created successfully", saved));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>(false, e.getMessage(), null));
-        }
+    public ResponseEntity<ApiResponse<TransactionDTO>> addTransaction(@RequestBody @Valid TransactionDTO dto, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        Long LoggedInUserId = userPrincipal.getUser().getId();
+        dto.setUserId(LoggedInUserId);
+        TransactionDTO saved = transactionService.addTransaction(dto, LoggedInUserId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(true, "Transaction created successfully", saved));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<TransactionDTO>> getTransaction(@PathVariable Long id) {
-        try {
-            TransactionDTO dto = transactionService.getTransactionById(id);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Transaction fetched successfully", dto));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse<>(false, e.getMessage(), null));
-        }
+        TransactionDTO dto = transactionService.getTransactionById(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Transaction fetched successfully", dto));
+
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<ApiResponse<PaginationDto<TransactionDTO>>> getAllTransactions(@ModelAttribute PaginationRequest paginationReq) {
-        try {
-            PaginationDto<TransactionDTO> page = transactionService.getAllTransactions(paginationReq);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Transactions fetched successfully", page));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>(false, e.getMessage(), null));
-        }
+        PaginationDto<TransactionDTO> page = transactionService.getAllTransactions(paginationReq);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Transactions fetched successfully", page));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<List<TransactionDTO>>> getTransactionsForUser(@PathVariable Long userId) {
-        try {
-            List<TransactionDTO> transactions = transactionService.getTransactionsByUser(userId);
-            return ResponseEntity.ok(new ApiResponse<>(true, "User transactions fetched successfully", transactions));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>(false, e.getMessage(), null));
-        }
+    @GetMapping("/for-user")
+    public ResponseEntity<ApiResponse<List<TransactionDTO>>> getTransactionsForUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        long loggedInUserId = userPrincipal.getUser().getId();
+        List<TransactionDTO> transactions = transactionService.getTransactionsByUser(loggedInUserId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "User transactions fetched successfully", transactions));
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteTransaction(@PathVariable Long id) {
-        try {
-            transactionService.deleteTransaction(id);
-            return ResponseEntity.ok(new ApiResponse<>(true, "Transaction deleted successfully", null));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(false, e.getMessage(), null));
-        }
+    public ResponseEntity<ApiResponse<Void>> deleteTransaction(@PathVariable Long id, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        long loggedInUserId = userPrincipal.getUser().getId();
+        transactionService.deleteTransaction(id, loggedInUserId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Transaction deleted successfully", null));
     }
+
 
     @GetMapping("/filter")
     public ResponseEntity<ApiResponse<List<TransactionDTO>>> filterTransactions(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) CategoryTypeEnum type,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        try {
-            List<TransactionDTO> transactions =
-                    transactionService.filterTransactions(userId, categoryId, type, startDate, endDate);
+        long loggedInUserId = userPrincipal.getUser().getId();
+        List<TransactionDTO> transactions =
+                transactionService.filterTransactions(loggedInUserId, categoryId, type, startDate, endDate);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Transactions filtered successfully", transactions));
 
-            return ResponseEntity.ok(new ApiResponse<>(true, "Transactions filtered successfully", transactions));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>(false, e.getMessage(), null));
-        }
     }
 }

@@ -1,15 +1,11 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class LoginResponseDto {
     private long id;
     private String username;
@@ -18,6 +14,7 @@ public class LoginResponseDto {
     private String role;
     private String accessToken;
     private String refreshToken;
+
 
 
 }

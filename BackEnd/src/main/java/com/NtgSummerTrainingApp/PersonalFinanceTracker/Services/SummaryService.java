@@ -26,9 +26,8 @@ public class SummaryService {
 
     private final TransactionRepo transactionRepo;
     private final RecurringTransactionRepo recurringTransactionRepo;
-    private final UserRepo userRepo;
-    public MonthlySummaryDto getMonthlySummary(Long userId, Integer month, Integer year) {
-        List<Transaction> transactions = transactionRepo.findByUserId(userId);
+    public MonthlySummaryDto getMonthlySummary(Long loggedInUserId, Integer month, Integer year) {
+        List<Transaction> transactions = transactionRepo.findByUserId(loggedInUserId);
 
         BigDecimal totalIncome = transactions.stream()
                 .filter(t -> t.getDate() != null
@@ -51,8 +50,8 @@ public class SummaryService {
         return new MonthlySummaryDto(month, year, totalIncome, totalExpenses, savings);
     }
 
-    public AnnualSummaryDto getAnnualSummary(long userId, int year) {
-        List<RecurringTransaction> recurringTransactions = recurringTransactionRepo.findByUserId(userId);
+    public AnnualSummaryDto getAnnualSummary(long loggedInUserId, int year) {
+        List<RecurringTransaction> recurringTransactions = recurringTransactionRepo.findByUserId(loggedInUserId);
         List<RecurringTransaction> annualRecurringTransactions = recurringTransactions.stream().filter(rt -> rt.getStartDate().getYear() == year).toList();
         BigDecimal totalIncome = BigDecimal.ZERO;
         BigDecimal totalExpense = BigDecimal.ZERO;
@@ -78,8 +77,8 @@ public class SummaryService {
         BigDecimal savings = totalIncome.subtract(totalExpense);
         return new AnnualSummaryDto(year, totalIncome, totalExpense, totalSalary, savings.abs());
     }
-    public BasicStatisticsDto basicStatistics(long userId , int year , int month){
-        List<Transaction> transactions = transactionRepo.findAll().stream().filter(t->t.getUser().getId() == userId).toList();
+    public BasicStatisticsDto basicStatistics(long loggedInUserId , int year , int month){
+        List<Transaction> transactions = transactionRepo.findAll().stream().filter(t->t.getUser().getId() == loggedInUserId).toList();
         BigDecimal maxAmount = transactions.stream()
                 .filter(t->t.getType() == CategoryTypeEnum.EXPENSE)
                 .map(Transaction::getAmount)
@@ -89,9 +88,9 @@ public class SummaryService {
                 .map(t->t.getCategory().getName())
                 .findFirst()
                 .orElse("No Category");
-        BigDecimal averageMonthlySpending = (getAnnualSummary(userId ,year).getTotalExpense()).divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
-        BigDecimal lastMonthExpense = getMonthlySummary(userId, month - 1, year).getTotalExpenses();
-        BigDecimal thisMonthExpense = getMonthlySummary(userId, month, year).getTotalExpenses();
+        BigDecimal averageMonthlySpending = (getAnnualSummary(loggedInUserId ,year).getTotalExpense()).divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP);
+        BigDecimal lastMonthExpense = getMonthlySummary(loggedInUserId, month - 1, year).getTotalExpenses();
+        BigDecimal thisMonthExpense = getMonthlySummary(loggedInUserId, month, year).getTotalExpenses();
         BigInteger percentageChangeFromLastMonth = calculatePercentageChange(lastMonthExpense, thisMonthExpense);
 
         return new BasicStatisticsDto(maxAmount,categoryName,averageMonthlySpending,percentageChangeFromLastMonth);

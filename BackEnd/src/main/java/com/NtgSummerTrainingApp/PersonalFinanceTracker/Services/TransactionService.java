@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -47,32 +48,20 @@ public class TransactionService {
         if (dto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Transaction amount must be greater than zero");
         }
-
-//        if (dto.getType() == null ||
-//                (!dto.getType().equalsIgnoreCase("EXPENSE") && !dto.getType().equalsIgnoreCase("INCOME"))) {
-//            throw new IllegalArgumentException("Transaction type must be either INCOME or EXPENSE");
-//        }
-//
-//        if (dto.getCurrency() == null || dto.getCurrency().isEmpty()) {
-//            throw new IllegalArgumentException("Currency is required");
-//        }
-
-        if (dto.getDate() == null) {
-            throw new IllegalArgumentException("Transaction date is required");
-        }
-
-
         User user = userRepo.findById(loggedInUserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Category category = categoryRepo.findById(dto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
         Transaction transaction = new Transaction();
         transaction.setAmount(dto.getAmount());
         transaction.setType(dto.getType());
-        transaction.setDescription(dto.getDescription());
-        transaction.setCurrency(dto.getCurrency());
+        if (dto.getDescription() != null){
+            transaction.setDescription(dto.getDescription());
+        }else {
+            transaction.setDescription("No Description");
+        }        transaction.setCurrency(dto.getCurrency());
         transaction.setDate(dto.getDate());
         transaction.setUser(user);
         transaction.setCategory(category);
@@ -112,28 +101,30 @@ public class TransactionService {
     }
 
     //  Get all transactions for a user
-    public List<TransactionDTO> getTransactionsByUser(Long userId) {
+    public List<TransactionDTO> getTransactionsByUser(long userId) {
         List<Transaction> transactions = transactionRepo.findByUserId(userId);
         return transactions.stream().map(TransactionMapper::toDTO).toList();
     }
 
     //  Delete a transaction
-    public void deleteTransaction(Long id) {
-        if (!transactionRepo.existsById(id)) {
-            throw new RuntimeException("Transaction not found");
+    public void deleteTransaction(Long id, long loggedInUserId) {
+        Transaction transaction = transactionRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
+        if(!(transaction.getUser().getId() == loggedInUserId)){
+            throw new AccessDeniedException("You are not authorized to delete this transaction.");
         }
         transactionRepo.deleteById(id);
     }
 
 
-    public List<TransactionDTO> filterTransactions(Long userId,
+    public List<TransactionDTO> filterTransactions(Long loggedInUserId,
                                                    Long categoryId,
                                                    CategoryTypeEnum type,
                                                    LocalDate startDate,
                                                    LocalDate endDate
                                                    ) {
 
-        List<Transaction> transactions = transactionRepo.findByUserId(userId);
+        List<Transaction> transactions = transactionRepo.findByUserId(loggedInUserId);
 
         if (startDate != null) {
             transactions = transactions.stream()
