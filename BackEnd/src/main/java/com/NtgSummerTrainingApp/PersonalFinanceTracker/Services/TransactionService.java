@@ -43,7 +43,7 @@ public class TransactionService {
 
 
     // add transaction
-    public TransactionDTO addTransaction(TransactionDTO dto) {
+    public TransactionDTO addTransaction(TransactionDTO dto, Long loggedInUserId) {
         if (dto.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Transaction amount must be greater than zero");
         }
@@ -61,7 +61,8 @@ public class TransactionService {
             throw new IllegalArgumentException("Transaction date is required");
         }
 
-        User user = userRepo.findById(dto.getUserId())
+
+        User user = userRepo.findById(loggedInUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Category category = categoryRepo.findById(dto.getCategoryId())
@@ -78,6 +79,9 @@ public class TransactionService {
 
         // Handle balance updates safely
         if (transaction.getType() == CategoryTypeEnum.EXPENSE) {
+            if (user.getBalance().compareTo(transaction.getAmount()) < 0) {
+                throw new IllegalArgumentException("Insufficient balance for this expense transaction");
+            }
             user.setBalance(user.getBalance().subtract(transaction.getAmount()));
         } else if (transaction.getType() == CategoryTypeEnum.INCOME) {
             user.setBalance(user.getBalance().add(transaction.getAmount()));

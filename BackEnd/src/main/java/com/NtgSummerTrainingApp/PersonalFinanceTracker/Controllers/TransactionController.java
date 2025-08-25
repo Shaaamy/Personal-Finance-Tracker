@@ -3,11 +3,13 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TransactionService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CategoryTypeEnum;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -20,10 +22,13 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
+
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<TransactionDTO>> addTransaction(@RequestBody TransactionDTO dto) {
+    public ResponseEntity<ApiResponse<TransactionDTO>> addTransaction(@RequestBody TransactionDTO dto, @AuthenticationPrincipal UserPrincipal userPrincipal) {
         try {
-            TransactionDTO saved = transactionService.addTransaction(dto);
+            Long LoggedInUserId = userPrincipal.getUser().getId();
+            dto.setUserId(LoggedInUserId);
+            TransactionDTO saved = transactionService.addTransaction(dto, LoggedInUserId);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new ApiResponse<>(true, "Transaction created successfully", saved));
         } catch (Exception e) {
