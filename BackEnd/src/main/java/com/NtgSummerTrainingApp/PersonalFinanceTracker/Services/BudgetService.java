@@ -33,9 +33,9 @@ public class BudgetService {
             throw new AccessDeniedException("You can only set budget for yourself");
         }
         User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
         Budget budget = budgetRepository.findByUserIdAndCategoryIdAndMonthAndYear(
                 dto.getUserId(), dto.getCategoryId(), dto.getMonth(), dto.getYear()

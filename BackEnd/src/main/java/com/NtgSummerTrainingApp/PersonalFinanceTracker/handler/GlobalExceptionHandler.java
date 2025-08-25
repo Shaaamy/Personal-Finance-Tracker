@@ -1,6 +1,7 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.handler;
 
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.ApiResponse;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.ILoggerFactory;
@@ -8,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import static com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.BusinessExceptions.*;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -72,11 +74,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TokenException.class)
-    public ResponseEntity<ApiResponse<String>> handleTokenException(TokenException ex) {
+    public ResponseEntity<ErrorResponse> handleTokenException(TokenException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ApiResponse<>(false, ex.getMessage(), null));
+                .body(new ErrorResponse(ex.getMessage(), "TOKEN_ERROR"));
     }
-
+//    @ExceptionHandler(MessagingException.class)
+//    public ResponseEntity<ErrorResponse> handleMessagingException(MessagingException ex){
+//        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), "EMAIL_ERROR");
+//        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleOtherException(Exception ex) {
         log.error("Unexpected error occurred", ex);

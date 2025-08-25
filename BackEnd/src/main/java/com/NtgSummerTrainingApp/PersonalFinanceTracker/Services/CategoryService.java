@@ -6,7 +6,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryRequestDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.CategoryResponseDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.PaginationRequest;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.DuplicateResourceException;
+import static com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.BusinessExceptions.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Category;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.CategoryRepository;

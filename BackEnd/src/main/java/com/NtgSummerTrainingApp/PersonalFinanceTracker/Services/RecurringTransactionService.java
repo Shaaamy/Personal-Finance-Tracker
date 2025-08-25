@@ -160,7 +160,7 @@ public class RecurringTransactionService {
 
     public void delete(Long id) {
         if (!recurringTransactionRepository.existsById(id)) {
-            throw new RuntimeException("Recurring transaction not found");
+            throw new EntityNotFoundException("Recurring transaction not found");
         }
         recurringTransactionRepository.deleteById(id);
     }

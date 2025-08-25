@@ -3,8 +3,7 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Services;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.PaginationMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.UserMapper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.DuplicateResourceException;
-import com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.TokenException;
+import static com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.BusinessExceptions.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.PasswordResetToken;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
@@ -19,7 +18,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -192,10 +190,10 @@ public class UserService {
 
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid password reset token"));
+                .orElseThrow(() -> new InvalidPasswordResetTokenException("Invalid password reset token"));
 
         if (resetToken.getExpiryDate().isBefore(java.time.LocalDateTime.now())) {
-            throw new RuntimeException("Password reset token has expired");
+            throw new ExpiredPasswordResetTokenException("Password reset token has expired");
         }
 
         User user = resetToken.getUser();

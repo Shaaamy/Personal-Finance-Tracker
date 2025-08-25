@@ -96,7 +96,7 @@ public class TransactionService {
     //  Get transaction by ID
     public TransactionDTO getTransactionById(Long id) {
         Transaction transaction = transactionRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
         return TransactionMapper.toDTO(transaction);
     }
 
