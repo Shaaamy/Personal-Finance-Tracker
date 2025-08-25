@@ -5,18 +5,30 @@
     <h2>Create Your Finance Tracker Account</h2>
     <p>Manage your finances effortlessly.</p>
 
-    <form (ngSubmit)="onSubmit()">
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
       <label for="name">Name</label>
-      <input id="name" type="text" placeholder="John Doe" required />
+      <input id="name" type="text" placeholder="John Doe" formControlName="fullName" required />
 
       <label for="email">Email</label>
-      <input id="email" type="email" placeholder="john.doe@example.com" required />
+      <input id="email" type="email" placeholder="john.doe@example.com" formControlName="email" required />
 
       <label for="password">Password</label>
-      <input id="password" type="password" placeholder="******" required />
-
+      <input id="password" type="password" placeholder="******" required formControlName="password" />
+<!--
       <label for="confirmPassword">Confirm Password</label>
-      <input id="confirmPassword" type="password" placeholder="******" required />
+      <input id="confirmPassword" type="password" placeholder="******" required formControlName="confirmPassword" /> -->
+
+      <label for="role">Role</label>
+      <select id="role" formControlName="role" required>
+        <option value="admin">Admin</option>
+        <option value="user">User</option>
+      </select>
+
+      <label for="balance">Balance</label>
+      <input id="balance" type="number" placeholder="1000" formControlName="balance" required />
+
+      <label for="username">userName</label>
+      <input id="username" type="text" placeholder="john.doe" formControlName="username" required />
 
       <button type="submit" class="btn signup-btn">Sign Up</button>
     </form>
