@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper.RecurringTransactionMapper.toDto;
@@ -44,6 +45,13 @@ public class RecurringTransactionService {
             transaction.setDescription(dto.getDescription());
         }else {
             transaction.setDescription("No Description");
+        }
+        if (dto.getStartDate() == null) {
+            dto.setStartDate(LocalDate.now());
+        }
+        transaction.setStartDate(dto.getStartDate());
+        if (dto.getEndDate() != null && dto.getEndDate().isBefore(dto.getStartDate())) {
+            throw new IllegalArgumentException("End date must be after start date");
         }
         // Assign user and category
         transaction.setUser(user);
@@ -125,8 +133,14 @@ public class RecurringTransactionService {
             transaction.setCategory(categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new EntityNotFoundException("Category not found")));
         }
-        if (request.getStartDate() != null) transaction.setStartDate(request.getStartDate());
-        if (request.getEndDate() != null) transaction.setEndDate(request.getEndDate());
+        if (request.getStartDate() == null) {
+            request.setStartDate(LocalDate.now());
+        }
+        transaction.setStartDate(request.getStartDate());
+        transaction.setNextDueDate(transaction.getStartDate());
+        if (request.getEndDate() != null && request.getEndDate().isBefore(request.getStartDate())) {
+            throw new IllegalArgumentException("End date must be after start date");
+        }
         if (request.getIsActive() != null) {
             transaction.setActive(request.getIsActive());
 

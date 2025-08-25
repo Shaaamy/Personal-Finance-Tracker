@@ -43,10 +43,8 @@ public class RecurringTransaction {
     @NotNull(message = "Active status is required")
     private Boolean active = true;
 
-    @NotNull(message = "Start date is required")
     private LocalDate startDate;
 
-    @NotNull(message = "End date is required")
     private LocalDate endDate;
 
     @ManyToOne(optional = false)

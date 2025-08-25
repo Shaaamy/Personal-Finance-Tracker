@@ -27,10 +27,8 @@ public class RecurringTransactionDto {
     @NotNull(message = "Frequency is required")
     private FrequencyEnum frequency;
 
-    @NotNull(message = "Start date is required")
     private LocalDate startDate;
 
-    @NotNull(message = "End date is required")
     private LocalDate endDate;
 
     private Long userId; // will be overridden from token, no validation needed
