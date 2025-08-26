@@ -100,12 +100,22 @@ public class TransactionService {
         return TransactionMapper.toDTO(transaction);
     }
 
-    //  Get all transactions for a user
-    public List<TransactionDTO> getTransactionsByUser(long userId) {
-        List<Transaction> transactions = transactionRepo.findByUserId(userId);
-        return transactions.stream().map(TransactionMapper::toDTO).toList();
-    }
+//    //  Get all transactions for a user
+//    public List<TransactionDTO> getTransactionsByUser(long userId) {
+//        List<Transaction> transactions = transactionRepo.findByUserId(userId);
+//        return transactions.stream().map(TransactionMapper::toDTO).toList();
+//    }
+public PaginationDto<TransactionDTO> getTransactionsByUser(long userId, PaginationRequest paginationReq) {
+    Pageable pageable = PaginationHelper.getPageable(paginationReq);
+    Page<Transaction> transactions = transactionRepo.findByUserId(userId, pageable);
 
+//    if(transactions.isEmpty()){
+//        throw new EntityNotFoundException("No Transactions Found for User ID: " + userId);
+//    }
+
+    Page<TransactionDTO> transactionsDtosPage = transactions.map(TransactionMapper::toDTO);
+    return PaginationMapper.toPaginatedDto(transactionsDtosPage);
+}
     //  Delete a transaction
     public void deleteTransaction(Long id, long loggedInUserId) {
         Transaction transaction = transactionRepo.findById(id)

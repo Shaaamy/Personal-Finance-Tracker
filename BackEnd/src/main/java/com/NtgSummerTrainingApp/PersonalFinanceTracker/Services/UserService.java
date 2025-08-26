@@ -19,6 +19,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -96,13 +97,15 @@ public class UserService {
     }
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto ) {
+        User userFound = userRepo.findByUsername(loginRequestDto.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found. Please register first"));
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword()));
         if (authentication.isAuthenticated()) {
             //Fetching the user twice is redundant
             //The authentication step already loads the user using your UserDetailsService ---> ( MyUserDetailsService). You can get the authenticated user from:
             UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-            User user = userRepo.findByUsername(principal.getUsername());
+            User user = principal.getUser(); // assuming you stored User in UserPrincipal
             String accessToken = jwtService.generateAccessToken(principal);
             String refreshToken = jwtService.generateRefreshToken(principal);
 

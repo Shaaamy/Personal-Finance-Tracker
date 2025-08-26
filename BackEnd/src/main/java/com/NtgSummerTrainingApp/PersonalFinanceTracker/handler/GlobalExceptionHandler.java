@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import static com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.BusinessExceptions.*;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,6 +30,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex){
         ErrorResponse error = new ErrorResponse(
                 ex.getMessage() != null ? ex.getMessage() : "Requested entity not found",
+                "NOT_FOUND" // custom error code
+
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex){
+        ErrorResponse error = new ErrorResponse(
+                ex.getMessage() != null ? ex.getMessage() : "Requested user not found with this username",
                 "NOT_FOUND" // custom error code
 
         );

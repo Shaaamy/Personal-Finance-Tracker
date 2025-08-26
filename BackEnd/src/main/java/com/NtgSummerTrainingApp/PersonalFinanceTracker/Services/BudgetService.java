@@ -79,7 +79,7 @@ public class BudgetService {
                 .orElseThrow(() -> new EntityNotFoundException("Budget not found"));
 
         if (budget.getUser().getId() != (loggedInUserId)) {
-            throw new EntityNotFoundException("This budget does not belong to the user");
+            throw new AccessDeniedException("This budget does not belong to the user");
         }
 
         budgetRepository.delete(budget);

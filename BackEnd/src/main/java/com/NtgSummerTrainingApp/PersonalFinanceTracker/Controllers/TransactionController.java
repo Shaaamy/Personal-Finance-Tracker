@@ -3,6 +3,7 @@ package com.NtgSummerTrainingApp.PersonalFinanceTracker.Controllers;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.TransactionService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.CategoryTypeEnum;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.Transaction;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,17 +45,42 @@ public class TransactionController {
 
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
-    public ResponseEntity<ApiResponse<PaginationDto<TransactionDTO>>> getAllTransactions(@ModelAttribute PaginationRequest paginationReq) {
-        PaginationDto<TransactionDTO> page = transactionService.getAllTransactions(paginationReq);
+    public ResponseEntity<ApiResponse<PaginationDto<TransactionDTO>>> getAllTransactions(
+            @ModelAttribute PaginationRequest paginationReq,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        // Check if user is admin or regular user
+        boolean isAdmin = userPrincipal.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        PaginationDto<TransactionDTO> page;
+
+        if (isAdmin) {
+            // Admin gets all transactions
+            page = transactionService.getAllTransactions(paginationReq);
+        } else {
+            // Regular user gets only their transactions
+             page = transactionService.getTransactionsByUser(userPrincipal.getUser().getId(), paginationReq);
+        }
+
         return ResponseEntity.ok(new ApiResponse<>(true, "Transactions fetched successfully", page));
     }
-
-    @GetMapping("/for-user")
-    public ResponseEntity<ApiResponse<List<TransactionDTO>>> getTransactionsForUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+//    // Admin endpoint - get transactions by specific user ID
+//    @GetMapping("/admin/user/{userId}")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ResponseEntity<?> getTransactionsByUserId(@PathVariable Long userId) {
+//        try {
+//            List<TransactionDTO> transactions = transactionService.getTransactionsByUser(userId,);
+//            return ResponseEntity.ok(transactions);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body("Error fetching transactions for user: " + e.getMessage());
+//        }
+//    }
+    @GetMapping("/user")
+    public ResponseEntity<ApiResponse<PaginationDto<TransactionDTO>>> getTransactionsForUser(@AuthenticationPrincipal UserPrincipal userPrincipal,@ModelAttribute PaginationRequest paginationReq) {
         long loggedInUserId = userPrincipal.getUser().getId();
-        List<TransactionDTO> transactions = transactionService.getTransactionsByUser(loggedInUserId);
+        PaginationDto<TransactionDTO> transactions = transactionService.getTransactionsByUser(loggedInUserId,paginationReq);
         return ResponseEntity.ok(new ApiResponse<>(true, "User transactions fetched successfully", transactions));
 
     }
