@@ -19,4 +19,7 @@ export class Welcome {
   goTosignup() {
     this.router.navigate(['/signup']);
   }
+  isAdmin(): boolean {
+  return localStorage.getItem('role') === 'ADMIN';
+}
 }

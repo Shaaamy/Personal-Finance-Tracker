@@ -1,3 +1,5 @@
+
+
 <div class="login-container">
   <div class="login-box">
     <img [src]="logoUrl" alt="Logo" class="logo" />
@@ -5,28 +7,27 @@
     <h2>Welcome back!</h2>
     <p>Sign in to your account to continue managing your finances.</p>
 
-    <form (ngSubmit)="onSubmit()">
-      <label>Email</label>
-      <input type="email" placeholder="you@example.com" required />
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <label for="username">userName</label>
+      <input id="username" type="text" placeholder="john.doe" formControlName="username" required />
 
-      <label>Password</label>
-      <input type="password" placeholder="******" required />
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="******" formControlName="password" required />
 
       <div class="forget">
-  <a (click)="goToForgot()">Forget Password?</a>
-</div>
+        <a (click)="goToForgot()">Forget Password?</a>
+      </div>
 
+      <div *ngIf="errorMsg" class="error-message">{{ errorMsg }}</div>
 
-       <button type="button" class="btn login-btn" (click)="goTohome()">Login</button>
-
+      <button type="submit" class="btn login-btn">Login</button>
     </form>
 
     <p class="signup-text">
-  Don’t have an account? <a (click)="goToSignup()">Sign Up</a>
-</p>
-<p class="signup-text">
-   Back to the welcome page ? <a (click)="goTowelcome()">Welcome</a>
-</p>
-
+      Don’t have an account? <a (click)="goToSignup()">Sign Up</a>
+    </p>
+    <p class="signup-text">
+      Back to the welcome page? <a (click)="goTowelcome()">Welcome</a>
+    </p>
   </div>
 </div>

@@ -6,7 +6,7 @@
   <a (click)="goToHome()">Home</a>
   <a (click)="goToTransaction()">Transaction</a>
   <a (click)="goToRecurring()">Recurring Transactions</a>
-  <a (click)="goToDashboard()">Dashboard</a>
+  <a *ngIf="isAdmin()"(click)="goToDashboard()">Dashboard</a>
   <a (click)="goToContact()">Contact Us</a>
   <a (click)="goToAbout()">About</a>
   <a (click)="goToLogin()" class="login-btn">Login</a>

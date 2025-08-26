@@ -10,7 +10,9 @@ export class Auth {
   constructor(private http: HttpClient) {}
 
   register(user: any): Observable<any> {
-    return this.http.post<any>('http://localhost:8081/user/register', user);
+    return this.http.post<any>('http://localhost:8081/users/register', user);
   }
-
+login(user: any): Observable<any> {
+    return this.http.post<any>('http://localhost:8081/users/login', user);
+  }
 }

@@ -7,6 +7,9 @@ import { HomeComponent } from './home/home';
 import { ContactUs } from './contect-us/contect-us'; 
 import { RecurringTransactionComponent } from './recurring-transaction/recurring-transaction';
 import { About } from './about/about';
+import { AdminGuard } from './services/admin.guard';
+import { Dashboard } from './dashboard/dashboard';
+
 export const routes: Routes = [
   { path: 'welcome', component: Welcome },
   { path: '', redirectTo: 'welcome', pathMatch: 'full' },
@@ -16,6 +19,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'signup', pathMatch: 'full' },
   { path: 'forgot-password', component: ForgotPassword },
   { path: '', redirectTo: 'forgot-password', pathMatch: 'full' },
+  { path: 'dashboard', component: Dashboard, canActivate: [AdminGuard] },
   { path: 'home', component: HomeComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'transaction', component: TransactionComponent },

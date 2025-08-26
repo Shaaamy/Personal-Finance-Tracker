@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component,OnInit,Inject , PLATFORM_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-interface RecurringTransaction {
+import { isPlatformBrowser } from '@angular/common';
+
+export interface RecurringTransaction {
   name: string;
   amount: number;
   category: string;
@@ -18,10 +20,19 @@ interface RecurringTransaction {
   styleUrls: ['./recurring-transaction.css']
 })
 export class RecurringTransactionComponent {
+  isBrowser: boolean;
   showForm = false;
   isEdit = false;
   editIndex: number | null = null;
 
+
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
+  
   transactions: RecurringTransaction[] = [
     { name: 'Monthly Rent', amount: 1500.00, category: 'Housing', frequency: 'Monthly', nextOccurrence: '2024-07-01' },
     { name: 'Gym Membership', amount: 45.99, category: 'Health', frequency: 'Monthly', nextOccurrence: '2024-06-15' },
@@ -51,7 +62,10 @@ export class RecurringTransactionComponent {
       return sum;
     }, 0);
   }
-
+isAdmin(): boolean {
+ // Safely access localStorage only in the browser
+    if (!this.isBrowser) return false;
+    return localStorage.getItem('role') === 'ADMIN';}
   addTransaction() {
     this.showForm = true;
     this.isEdit = false;
@@ -83,10 +97,9 @@ export class RecurringTransactionComponent {
   cancelForm() {
     this.showForm = false;
     this.isEdit = false;
-    this.editIndex = null;
+  // Removed duplicate constructor
   }
 
-  constructor(private router: Router) {}
   
   goHome() {
     this.router.navigate(['/home']);   

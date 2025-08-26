@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RecurringTransaction } from './recurring-transaction';
+import { RecurringTransactionComponent  } from './recurring-transaction';
 
 describe('RecurringTransaction', () => {
-  let component: RecurringTransaction;
-  let fixture: ComponentFixture<RecurringTransaction>;
+  let component: RecurringTransactionComponent;
+  let fixture: ComponentFixture<RecurringTransactionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RecurringTransaction]
+      imports: [RecurringTransactionComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RecurringTransaction);
+    fixture = TestBed.createComponent(RecurringTransactionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

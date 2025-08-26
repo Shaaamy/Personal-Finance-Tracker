@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component,OnInit,Inject , PLATFORM_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-interface Transaction {
+import { isPlatformBrowser } from '@angular/common';
+export interface Transaction {
   date: string;
   description: string;
   category: string;
@@ -18,9 +19,17 @@ interface Transaction {
   styleUrls: ['./transaction.css']
 })
 export class TransactionComponent {
+    isBrowser: boolean;
   showForm = false;
   isEdit = false;
   editIndex: number | null = null;
+
+constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   transactions: Transaction[] = [
     { date: '2023-10-26', description: 'Groceries at FreshMart', category: 'Food', type: 'Expense', amount: 54.20 },
@@ -58,7 +67,10 @@ export class TransactionComponent {
   get status(): string {
     return this.netBalance >= 0 ? 'Profit' : 'Loss';
   }
-
+isAdmin(): boolean {
+ // Safely access localStorage only in the browser
+    if (!this.isBrowser) return false;
+    return localStorage.getItem('role') === 'ADMIN';}
   addTransaction() {
     this.showForm = true;
     this.isEdit = false;
@@ -93,7 +105,6 @@ export class TransactionComponent {
     this.editIndex = null;
   }
 
-  constructor(private router: Router) {}
  
   goHome() {
     this.router.navigate(['/home']);   
