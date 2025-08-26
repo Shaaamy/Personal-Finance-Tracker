@@ -1,7 +1,10 @@
 package com.NtgSummerTrainingApp.PersonalFinanceTracker.Mapper;
 
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.RegisterDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.UserDto;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
+
+import java.math.BigDecimal;
 
 public class UserMapper {
 
@@ -28,6 +31,16 @@ public class UserMapper {
                 .balance(userDto.getBalance())
                 .createdAt(userDto.getCreatedAt())
                 .updatedAt(userDto.getUpdatedAt())
+                .build();
+    }
+    // NEW: map RegisterDto → User
+    public static User fromRegisterDto(RegisterDto registerDto) {
+        return User.builder()
+                .username(registerDto.getUsername())
+                .fullName(registerDto.getFullName())
+                .email(registerDto.getEmail())
+                .password(registerDto.getPassword()) // make sure to encode before saving!
+                .balance(registerDto.getBalance() != null ? registerDto.getBalance() : BigDecimal.ZERO)
                 .build();
     }
 }

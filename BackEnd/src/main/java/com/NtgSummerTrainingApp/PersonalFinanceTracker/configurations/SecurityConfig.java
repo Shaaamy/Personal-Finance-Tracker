@@ -45,9 +45,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable); // Only disable CSRF
         http
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/user/register", "/user/login"
-                                ,"/user/logout","/user/forgot-password"
-                                ,"/user/reset-password")
+                        .requestMatchers("/users/register", "/users/login"
+                                ,"/users/logout","/users/forgot-password"
+                                ,"/users/reset-password","/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html")
                         .permitAll()
                         .anyRequest().authenticated()
                         )

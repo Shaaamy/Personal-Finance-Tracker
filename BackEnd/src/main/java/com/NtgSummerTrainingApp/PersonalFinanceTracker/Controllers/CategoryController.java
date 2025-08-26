@@ -16,7 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/categories")
 @Validated
 @CrossOrigin(origins = "http://localhost:4200")
 public class CategoryController {

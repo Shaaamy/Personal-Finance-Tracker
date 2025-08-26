@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("transaction")
+@RequestMapping("transactions")
 @RequiredArgsConstructor
 @Validated
 @CrossOrigin(origins = "http://localhost:4200")
@@ -27,7 +27,7 @@ public class TransactionController {
     private final TransactionService transactionService;
 
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<ApiResponse<TransactionDTO>> addTransaction(@RequestBody @Valid TransactionDTO dto, @AuthenticationPrincipal UserPrincipal userPrincipal) {
         Long LoggedInUserId = userPrincipal.getUser().getId();
         dto.setUserId(LoggedInUserId);

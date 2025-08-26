@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @Validated
 @CrossOrigin(origins = "http://localhost:4200")
@@ -33,9 +33,8 @@ public class UserController {
         // create new user
     //
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<LoginResponseDto>> register( @RequestBody UserDto userDto) {
-        User user = UserMapper.toEntity(userDto);
-        LoginResponseDto response = userService.createUser(user);
+    public ResponseEntity<ApiResponse<LoginResponseDto>> register(@Valid @RequestBody RegisterDto registerDto) {
+        LoginResponseDto response = userService.createUser(registerDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ApiResponse<>(true, "User registered successfully", response));
@@ -135,5 +134,11 @@ public class UserController {
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "Password has been reset successfully", null)
         );
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/set-role")
+    public ResponseEntity<ApiResponse<String>> setUserRole(@RequestParam Long userId, @RequestParam String role) {
+        String result = userService.setUserRole(userId, role);
+        return ResponseEntity.ok(new ApiResponse<>(true, "User role updated successfully", result));
     }
 }

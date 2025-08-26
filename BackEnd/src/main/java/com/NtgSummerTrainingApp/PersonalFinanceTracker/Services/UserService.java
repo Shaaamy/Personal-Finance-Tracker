@@ -6,6 +6,7 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
 import static com.NtgSummerTrainingApp.PersonalFinanceTracker.handler.BusinessExceptions.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.helper.PaginationHelper;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.PasswordResetToken;
+import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.RoleEnum;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.repository.PasswordResetTokenRepository;
@@ -36,8 +37,8 @@ public class UserService {
     private final PasswordResetTokenRepository tokenRepository;
     private final MyUserDetailsService userDetailsService;
     private final EmailService emailService;
-    public LoginResponseDto  createUser(User user) {
-
+    public LoginResponseDto  createUser(RegisterDto registerDto) {
+        User user = UserMapper.fromRegisterDto(registerDto);
         if(userRepo.existsByUsername(user.getUsername())){
             throw new DuplicateResourceException("Username '" + user.getUsername() + "' already exists");
         }
@@ -45,6 +46,7 @@ public class UserService {
             throw new DuplicateResourceException("Email '" + user.getEmail() + "' already exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(RoleEnum.USER);
         userRepo.save(user);
         UserPrincipal principal = new UserPrincipal(user);
         String accessToken = jwtService.generateAccessToken(principal);
@@ -201,5 +203,18 @@ public class UserService {
         userRepo.save(user);
 
         tokenRepository.delete(resetToken); // invalidate token
+    }
+
+    public String setUserRole(Long userId, String role) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id " + userId));
+        try {
+            RoleEnum newRole = Enum.valueOf(RoleEnum.class, role.trim().toUpperCase());
+            user.setRole(newRole);
+            userRepo.save(user);
+            return "User "+user.getUsername()+" role updated to " + newRole;
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
     }
 }
