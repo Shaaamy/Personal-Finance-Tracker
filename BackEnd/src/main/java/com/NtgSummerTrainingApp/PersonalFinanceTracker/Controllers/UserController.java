@@ -7,6 +7,8 @@ import com.NtgSummerTrainingApp.PersonalFinanceTracker.Services.UserService;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.dto.*;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.User;
 import com.NtgSummerTrainingApp.PersonalFinanceTracker.models.UserPrincipal;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,8 +44,25 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto loginRequestDto, HttpServletResponse httpResponse) {
         LoginResponseDto response = userService.login(loginRequestDto);
+        // create cookie
+        Cookie accessTokenCookie = new Cookie("accessToken", response.getAccessToken());
+        accessTokenCookie.setHttpOnly(true);       // JS cannot read it
+        accessTokenCookie.setSecure(false);        // true if using HTTPS
+        accessTokenCookie.setPath("/");            // available for entire app
+        accessTokenCookie.setMaxAge(15 * 60);      // e.g., 15 minutes for access token
+        httpResponse.addCookie(accessTokenCookie);
+        // Keep refresh token in response body (or optionally in a secure HttpOnly cookie as well)
+        // You may want a longer expiration for refresh token
+        // response.setAccessToken(null); // optional: do not return access token in body
+        // Optionally, create a cookie for refresh token
+        Cookie refreshTokenCookie = new Cookie("refreshToken", response.getRefreshToken());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(false);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+        httpResponse.addCookie(refreshTokenCookie);
         return ResponseEntity.ok(new ApiResponse<>(true, "Login successful", response));
     }
 
