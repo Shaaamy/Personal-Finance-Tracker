@@ -137,7 +137,7 @@ public class UserController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/set-role")
-    public ResponseEntity<ApiResponse<String>> setUserRole(@RequestParam Long userId, @RequestParam String role) {
+    public ResponseEntity<ApiResponse<String>> setUserRole(@RequestBody Long userId, @RequestBody String role) {
         String result = userService.setUserRole(userId, role);
         return ResponseEntity.ok(new ApiResponse<>(true, "User role updated successfully", result));
     }
