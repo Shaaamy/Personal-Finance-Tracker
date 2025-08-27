@@ -36,6 +36,7 @@ export class ForgotPasswordComponent {
     }
 
     const email = this.forgotPasswordForm.get('email')?.value;
+    console.log(email);
     if (!email) return;
 
     this.isLoading = true;
@@ -43,28 +44,18 @@ export class ForgotPasswordComponent {
     this.authService.forgotPassword(email).subscribe({
       next: (response) => {
         this.isLoading = false;
-
-        // Handle success or failure even if status is 200
-        if (response?.body?.success) {
+        if (response.body?.success) {
           this.successMsg = 'Password reset instructions sent. Check your inbox.';
           this.forgotPasswordForm.reset();
-          // Optional: Redirect to reset page after a short delay
           setTimeout(() => this.router.navigate(['/reset-password']), 2000);
         } else {
-          this.errorMsg = response?.body?.message || 'Failed to send reset email.';
+          this.errorMsg = response.body?.message || 'Failed to send reset email.';
         }
-
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
-
-        // Handle non-200 errors
-        this.errorMsg =
-          err?.error?.message ||
-          err?.error?.error ||
-          'An error occurred. Please try again.';
-
+        this.errorMsg = err?.error?.message || 'An error occurred. Please try again.';
         this.cdr.detectChanges();
       }
     });
