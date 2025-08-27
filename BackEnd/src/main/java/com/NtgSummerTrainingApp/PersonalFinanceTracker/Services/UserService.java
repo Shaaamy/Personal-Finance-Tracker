@@ -197,7 +197,10 @@ public class UserService {
         return resetToken.getToken();
     }
 
-    public void resetPassword(String token, String newPassword) {
+    public void resetPassword(String token, String newPassword, String confirmNewPassword) {
+        if (!Objects.equals(newPassword, confirmNewPassword)) {
+            throw new IllegalArgumentException("New Password and Confirm New Password do not match");
+        }
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new InvalidPasswordResetTokenException("Invalid password reset token"));
 

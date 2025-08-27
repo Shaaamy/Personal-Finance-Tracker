@@ -152,8 +152,9 @@ public class UserController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<ApiResponse<String>> resetPassword(@RequestParam String token,
-                                                             @RequestParam String newPassword) {
-        userService.resetPassword(token, newPassword);
+                                                             @RequestParam String newPassword,
+                                                             @RequestParam String confirmNewPassword) {
+        userService.resetPassword(token, newPassword,confirmNewPassword);
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "Password has been reset successfully", null)
         );
