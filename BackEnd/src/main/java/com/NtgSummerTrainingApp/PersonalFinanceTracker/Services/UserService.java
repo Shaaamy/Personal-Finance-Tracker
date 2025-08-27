@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -45,6 +46,9 @@ public class UserService {
         }
         if(userRepo.existsByEmail(user.getEmail())){
             throw new DuplicateResourceException("Email '" + user.getEmail() + "' already exists");
+        }
+        if(!Objects.equals(user.getPassword(), registerDto.getConfirmPassword())){
+            throw new IllegalArgumentException("Password and Confirm Password do not match");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(RoleEnum.USER);

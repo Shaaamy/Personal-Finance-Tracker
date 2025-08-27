@@ -29,6 +29,10 @@ public class RegisterDto {
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
+    @NotBlank(message = "Confirm Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    private String confirmPassword;
+
     @NotNull(message = "Initial balance is required")
     @DecimalMin(value = "0.0", inclusive = true, message = "Balance cannot be negative")
     private BigDecimal balance;
