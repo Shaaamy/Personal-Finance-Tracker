@@ -17,6 +17,7 @@ export class Signup {
     email: new FormControl(''),
     fullName: new FormControl(''),
     password: new FormControl(''),
+    confirmPassword: new FormControl(''),
     role: new FormControl(''),
     balance: new FormControl('')
   });
