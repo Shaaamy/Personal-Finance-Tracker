@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { Auth } from '../services/auth';
 
 export interface RecurringTransaction {
   name: string;
@@ -28,7 +29,8 @@ export class RecurringTransactionComponent {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router
+    private router: Router,
+    private authService : Auth
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -62,10 +64,11 @@ export class RecurringTransactionComponent {
       return sum;
     }, 0);
   }
+ // ====== Role-based Access ======
+ 
 isAdmin(): boolean {
- // Safely access localStorage only in the browser
-    if (!this.isBrowser) return false;
-    return localStorage.getItem('role') === 'ADMIN';}
+    return this.authService.isAdmin();
+  }
   addTransaction() {
     this.showForm = true;
     this.isEdit = false;

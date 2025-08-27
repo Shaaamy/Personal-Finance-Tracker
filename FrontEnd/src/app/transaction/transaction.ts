@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { Auth } from '../services/auth';
 export interface Transaction {
   date: string;
   description: string;
@@ -26,7 +27,8 @@ export class TransactionComponent {
 
 constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router
+    private router: Router,
+    private authService: Auth
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
@@ -67,10 +69,15 @@ constructor(
   get status(): string {
     return this.netBalance >= 0 ? 'Profit' : 'Loss';
   }
+
+   // ====== Role-based Access ======
+  
 isAdmin(): boolean {
- // Safely access localStorage only in the browser
-    if (!this.isBrowser) return false;
-    return localStorage.getItem('role') === 'ADMIN';}
+    return this.authService.isAdmin();
+  }
+
+    // ====== Transaction Management ======
+
   addTransaction() {
     this.showForm = true;
     this.isEdit = false;

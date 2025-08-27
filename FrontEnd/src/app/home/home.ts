@@ -3,12 +3,15 @@ import { Router } from '@angular/router';
 import { UserDataService } from '../services/user-data.service';
 import { CommonModule } from '@angular/common';
 import { isPlatformBrowser } from '@angular/common';
+import { Auth } from '../services/auth';
 
 
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.html',
+    standalone: true,  // ✅ Add this!
+
   styleUrls: ['./home.css'],
     imports: [CommonModule]
 
@@ -21,6 +24,7 @@ export class HomeComponent implements OnInit {   // ✅ better to name it HomeCo
   constructor(
     private router: Router,
     private userDataService: UserDataService,
+    private authService : Auth,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -28,11 +32,14 @@ export class HomeComponent implements OnInit {   // ✅ better to name it HomeCo
   ngOnInit() {
   if (!this.isBrowser) return;
 
-  const token = localStorage.getItem('token');
-  if (!token) {
-    this.router.navigate(['/login']);
-    return;
-  }
+  // ✅ Use your auth service instead of manual cookie checking
+    if (!this.authService.isAuthenticated()) {
+      console.log('User not authenticated, redirecting to login');
+      this.router.navigate(['/login']);
+      return;
+    }
+        console.log('User authenticated, loading home page data');
+
 
   this.userDataService.getTransactions().subscribe({
     next: data => {
@@ -49,9 +56,15 @@ export class HomeComponent implements OnInit {   // ✅ better to name it HomeCo
   });
 }
   isAdmin(): boolean {
- // Safely access localStorage only in the browser
+    return this.authService.isAdmin();
+  }
+
+  // ✅ Helper to check if auth cookie exists
+  private hasAuthCookie(): boolean {
     if (!this.isBrowser) return false;
-    return localStorage.getItem('role') === 'ADMIN';}
+    return document.cookie.includes('token='); // or your actual cookie name
+  }
+
  goToWelcome() {
     this.router.navigate(['/welcome']);   
   }
@@ -80,6 +93,14 @@ export class HomeComponent implements OnInit {   // ✅ better to name it HomeCo
   }
 
   goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
+  // ✅ Add logout functionality
+  logout() {
+    // Clear cookies (you might want to add this to your auth service)
+    document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
     this.router.navigate(['/login']);
   }
 }

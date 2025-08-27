@@ -2,42 +2,57 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Auth } from '../services/auth';
 
 @Injectable({ providedIn: 'root' })
 export class UserDataService {
   private baseUrl = 'http://localhost:8081'; // your backend URL
 
-  constructor(private http: HttpClient) {}
-
-  private getAuthHeaders() {
-    const token = localStorage.getItem('token');
-    return {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      })
-    };
+  constructor(private http: HttpClient
+    ,private authService : Auth
+  ) {}
+private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getAccessToken();
+    if (token) {
+      return new HttpHeaders({
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      });
+    }
+    return new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
   }
+  
 
-  getTransactions(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/transactions`, this.getAuthHeaders())
-      .pipe(
-        catchError(this.handleError)
-      );
+  getTransactions(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/transactions`, {
+      headers: this.getAuthHeaders(),
+      withCredentials: true
+    })    .pipe(catchError(this.handleError));
+;
   }
 getUserTransactions(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.baseUrl}/transactions/user`, this.getAuthHeaders())
+  return this.http.get<any[]>(`${this.baseUrl}/transactions/user`, {headers: this.getAuthHeaders(), withCredentials: true })
     .pipe(catchError(this.handleError));
 }
 
 
 
-  getRecurringTransactions(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/recurring-transactions`, this.getAuthHeaders())
-      .pipe(
-        catchError(this.handleError)
-      );
+   getRecurringTransactions(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/recurring-transactions`, {
+      headers: this.getAuthHeaders(),
+      withCredentials: true
+    })    .pipe(catchError(this.handleError));
+;
   }
+
+isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+
+
 
 // user-data.service.ts
 private handleError(error: any) {

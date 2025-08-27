@@ -2,6 +2,7 @@ import { Component,OnInit,Inject , PLATFORM_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { Auth } from '../services/auth';
 
 @Component({
   selector: 'app-about',
@@ -15,15 +16,15 @@ export class About {
 
 constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
+    private authService:Auth,
     private router: Router
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   isAdmin(): boolean {
- // Safely access localStorage only in the browser
-    if (!this.isBrowser) return false;
-    return localStorage.getItem('role') === 'ADMIN';}
+    return this.authService.isAdmin();
+  }
    goToWelcome() {
     this.router.navigate(['/welcome']);   
   }

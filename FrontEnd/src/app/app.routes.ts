@@ -20,7 +20,7 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPassword },
   { path: '', redirectTo: 'forgot-password', pathMatch: 'full' },
   { path: 'dashboard', component: Dashboard, canActivate: [AdminGuard] },
-  { path: 'home', component: HomeComponent },
+  { path: 'home', component: HomeComponent },  
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'transaction', component: TransactionComponent },
   { path: '', redirectTo: 'transaction', pathMatch: 'full' },

@@ -21,10 +21,10 @@ export class Login {
 
   errorMsg: string = '';
 
-  constructor(private router: Router, private authService: Auth, private cdr: ChangeDetectorRef) {}
+  constructor(private router: Router, private authService: Auth, private cdr: ChangeDetectorRef) { }
 
   onSubmit() {
-    this.errorMsg = ''; // reset previous errors
+    this.errorMsg = '';
 
     if (this.loginForm.invalid) {
       this.errorMsg = 'Please fill all required fields correctly.';
@@ -37,36 +37,49 @@ export class Login {
     };
 
     this.authService.login(loginData).subscribe({
-      next: (res) => {
-        console.log('Login response:', res);
+      next: (response) => {
+        console.log('Login successful, checking authentication...');
 
-        if (res.data?.accessToken) {
-          localStorage.setItem('token', res.data.accessToken);
-          localStorage.setItem('role', res.data.role);
+        // Wait a short time for the cookies to be set
+        setTimeout(() => {
+          // Debug authentication info
+          this.authService.debugAuth();
 
-          if (res.data.role === 'ADMIN') {
-            this.router.navigate(['/dashboard']);
-          } else {
-            this.router.navigate(['/home']);
+          if (!this.authService.isAuthenticated()) {
+            console.warn('User not authenticated!');
+            this.errorMsg = 'Authentication failed';
+            return;
           }
-        } else {
-          // API sent a message without token (like auth error)
-          this.errorMsg = res.message || 'Login failed';
-          this.cdr.detectChanges(); // force view update
-        }
+
+          const role = this.authService.getUserRole();
+          console.log('User role:', role);
+
+          if (this.authService.isAdmin()) {
+            console.log('Navigating to admin dashboard');
+            this.router.navigate(['/dashboard']);
+          } else if (this.authService.isUser()) {
+            console.log('Navigating to user home');
+            this.router.navigate(['/home']).then(success => {
+    console.log('Home navigation result:', success);
+    if (!success) {
+      console.error('Navigation to /home failed - route might not exist');
+    }
+  }).catch(err => {
+    console.error('Home navigation error:', err);
+  });
+          } else {
+            console.log('Unknown role, navigating to default home');
+            this.router.navigate(['/welcome']);
+          }
+        }, 500);
       },
       error: (err) => {
         console.error('Login error:', err);
-
-        if (err.status === 404) {
-          this.errorMsg = err?.error?.message;
-        }
-          this.errorMsg = err?.error?.message || "Server Error"
-        this.cdr.detectChanges(); // force view update
+        this.errorMsg = err?.error?.message || 'Server Error';
+        this.cdr.detectChanges();
       }
     });
   }
-
   goToSignup() {
     this.router.navigate(['/signup']);
   }
