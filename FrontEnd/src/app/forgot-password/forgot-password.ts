@@ -1,29 +1,76 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { Auth } from '../services/auth';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.html',
-  styleUrls: ['./forgot-password.css']
+  styleUrls: ['./forgot-password.css'],
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule]
 })
-export class ForgotPassword {
-  logoUrl: string = 'https://agency.entasher.com/Images/actualsize/2024/5/Logo_847363b7554a46b48559c222f4f9053c.png';
+export class ForgotPasswordComponent {
+  forgotPasswordForm = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email])
+  });
 
-  onSubmit(contactInfo: string) {
-    if (!contactInfo) {
-      alert('⚠️ Please enter your email or phone number.');
+  errorMsg = '';
+  successMsg = '';
+  isLoading = false;
+
+  constructor(
+    private router: Router,
+    private authService: Auth,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  onSubmit() {
+    this.errorMsg = '';
+    this.successMsg = '';
+
+    if (this.forgotPasswordForm.invalid) {
+      this.errorMsg = 'Please enter a valid email address.';
       return;
     }
 
-    if (contactInfo.includes('@')) {
-      alert(`📧 Reset instructions sent to email: ${contactInfo}`);
-    } else {
-      alert(`📱 Reset instructions sent to phone: ${contactInfo}`);
-    }
-  }
-  constructor(private router: Router) {}
+    const email = this.forgotPasswordForm.get('email')?.value;
+    if (!email) return;
 
-  goBackToLogin() {
+    this.isLoading = true;
+
+    this.authService.forgotPassword(email).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+
+        // Handle success or failure even if status is 200
+        if (response?.body?.success) {
+          this.successMsg = 'Password reset instructions sent. Check your inbox.';
+          this.forgotPasswordForm.reset();
+          // Optional: Redirect to reset page after a short delay
+          setTimeout(() => this.router.navigate(['/reset-password']), 2000);
+        } else {
+          this.errorMsg = response?.body?.message || 'Failed to send reset email.';
+        }
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isLoading = false;
+
+        // Handle non-200 errors
+        this.errorMsg =
+          err?.error?.message ||
+          err?.error?.error ||
+          'An error occurred. Please try again.';
+
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  goToLogin() {
     this.router.navigate(['/login']);
   }
-  
 }

@@ -2,7 +2,8 @@ import { Routes } from '@angular/router';
 import { Welcome } from './welcome/welcome';
 import { Login } from './login/login';
 import { Signup } from './signup/signup';
-import { ForgotPassword } from './forgot-password/forgot-password';import { TransactionComponent } from './transaction/transaction';
+import { ForgotPasswordComponent } from './forgot-password/forgot-password';
+import { TransactionComponent } from './transaction/transaction';
 import { HomeComponent } from './home/home'; 
 import { ContactUs } from './contect-us/contect-us'; 
 import { RecurringTransactionComponent } from './recurring-transaction/recurring-transaction';
@@ -17,7 +18,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'signup', component: Signup },
   { path: '', redirectTo: 'signup', pathMatch: 'full' },
-  { path: 'forgot-password', component: ForgotPassword },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: '', redirectTo: 'forgot-password', pathMatch: 'full' },
   { path: 'dashboard', component: Dashboard, canActivate: [AdminGuard] },
   { path: 'home', component: HomeComponent },  

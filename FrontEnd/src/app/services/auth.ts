@@ -118,5 +118,32 @@ export class Auth {
     }
   }
 
-  
+  // Add these methods to your existing Auth service
+
+forgotPassword(email: string): Observable<any> {
+  return this.http.post<any>(
+    `${this.baseUrl}/forgot-password`,
+    null,  // No body needed since email is a query param
+    {
+      params: { email: email },  // Send email as query parameter
+      withCredentials: true,
+      observe: 'response'
+    }
+  );
+}
+
+resetPassword(token: string, newPassword: string): Observable<any> {
+  return this.http.post<any>(
+    `${this.baseUrl}/reset-password`,
+    null,  // No body needed since params are query parameters
+    {
+      params: { 
+        token: token,
+        newPassword: newPassword
+      },
+      withCredentials: true,
+      observe: 'response'
+    }
+  );
+}
 }
