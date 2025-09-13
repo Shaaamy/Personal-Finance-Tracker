@@ -10,7 +10,7 @@ import { RecurringTransactionComponent } from './recurring-transaction/recurring
 import { About } from './about/about';
 import { AdminGuard } from './services/admin.guard';
 import { Dashboard } from './dashboard/dashboard';
-
+import { ResetPasswordComponent } from './reset-password/reset-password';
 export const routes: Routes = [
   { path: 'welcome', component: Welcome },
   { path: '', redirectTo: 'welcome', pathMatch: 'full' },
@@ -31,6 +31,8 @@ export const routes: Routes = [
   { path: '', redirectTo: 'recurring-transaction', pathMatch: 'full' },
   { path: 'about', component: About},
   { path: '', redirectTo: 'about', pathMatch: 'full' },
+  { path: 'reset-pasword', component: ResetPasswordComponent},
+  { path: '', redirectTo: 'reset-password', pathMatch: 'full' },
 ];
 
 

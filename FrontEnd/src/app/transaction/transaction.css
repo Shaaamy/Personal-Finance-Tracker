@@ -60,7 +60,9 @@
 .transactions-table th, .transactions-table td {
   padding: 10px;
   border-bottom: 1px solid #ddd;
+  text-align: center; /* ✅ better alignment */
 }
+
 .badge {
   padding: 5px 10px;
   border-radius: 12px;

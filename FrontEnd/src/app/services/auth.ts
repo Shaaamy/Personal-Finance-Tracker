@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class Auth {
     );
   }
 
-  login(user: Record<string, any>): Observable<any> {
+ login(user: Record<string, any>): Observable<any> {
     return this.http.post<any>(
       `${this.baseUrl}/login`,
       user,
@@ -29,12 +30,37 @@ export class Auth {
         withCredentials: true,
         observe: 'response'
       }
+    ).pipe(
+      tap((response: HttpResponse<any>) => {
+        
+        if (response.body) {
+          console.log('Response Body:', response.body);
+          
+          const accessToken = response.body.data?.accessToken;
+          
+          if (accessToken) {
+            localStorage.setItem('accessToken', accessToken);
+            console.log('Access token stored in localStorage');
+          }
+          
+          if (response.body.data) {
+            const userData = {
+              username: response.body.data.username,
+              role: response.body.data.role
+            };
+            localStorage.setItem('userData', JSON.stringify(userData));
+          }
+        }
+      })
     );
   }
 
   getCookie(name: string): string | null {
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+if (typeof document !== 'undefined') {
+ const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     return match ? decodeURIComponent(match[2]) : null;
+}
+return null;
   }
 
   // Add method to decode JWT token
@@ -51,11 +77,17 @@ export class Auth {
 
   // Get access token from cookie
   getAccessToken(): string | null {
-    return this.getCookie('accessToken');
+
+    if (typeof document !== 'undefined') {
+ return this.getCookie('accessToken');
+}
+    return null;
   }
 
   // Extract role from JWT token
   getUserRole(): string | null {
+
+    
     const token = this.getAccessToken();
     if (!token) {
       return null;
@@ -146,4 +178,77 @@ resetPassword(token: string, newPassword: string): Observable<any> {
     }
   );
 }
+//    transaction(user: Record<string, any>): Observable<any> {
+//     return this.http.post<any>(
+//       `http://localhost:8081/transactions`,
+//       user,
+//       {
+//         headers: { Authorization:' Bearer ${yourToken} ', 'Content-Type': 'application/json' },   
+//         withCredentials: true,
+//         observe: 'response'
+//       }
+//     );
+// }
+
+// transaction(data: Record<string, any>): Observable<any> {
+//   const token = this.getAccessToken();            // ✅ use cookie
+//   const headers = new HttpHeaders({
+//     'Authorization': `Bearer ${token}`,
+//     'Content-Type': 'application/json'
+//   });
+
+//   return this.http.post<any>(
+//     'http://localhost:8081/transactions',
+//     data,
+//     { headers, withCredentials: true, observe: 'response' }
+//   );
+// }
+
+private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      return new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `${token}`
+      });
+    } else {
+      console.warn('No access token found in localStorage');
+      return new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+    }
+  }
+
+  transaction(user: Record<string, any>): Observable<any> {
+    const headers = this.getAuthHeaders();
+    
+    return this.http.post<any>(
+      `http://localhost:8081/transaction`,
+      user,
+      {
+        headers: headers,
+        withCredentials: true,
+        observe: 'response'
+      }
+    ).pipe(
+      tap((response: HttpResponse<any>) => {
+        console.log('Transaction API Response:', response);
+        console.log('Response Status:', response.status);
+        
+        if (response.body) {
+          console.log('Response Body:', response.body);
+        }
+      }),
+      catchError((error: any) => {
+        console.error('Transaction error:', error);
+        if (error.status === 401) {
+          console.error('Authentication failed - token may be invalid or expired');
+          
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+
+
 }
