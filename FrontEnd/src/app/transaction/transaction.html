@@ -2,7 +2,8 @@
 <nav class="navbar">
   <div class="nav-left">
     <a href="#">
-      <img src="https://agency.entasher.com/Images/actualsize/2024/5/Logo_847363b7554a46b48559c222f4f9053c.png" alt="Logo" class="logo">
+      <img src="https://agency.entasher.com/Images/actualsize/2024/5/Logo_847363b7554a46b48559c222f4f9053c.png"
+           alt="Logo" class="logo">
     </a>
     <span class="brand">Finance</span>
   </div>
@@ -10,11 +11,10 @@
     <li><a (click)="goHome()">Home</a></li>
     <li><a (click)="goToTransaction()">Transactions</a></li>
     <li><a (click)="goToRecurring()">Recurring Transactions</a></li>
-    <li><a *ngIf="isAdmin()" (click)="goToDashboard()">Dashboard</a></li>
     <li><a (click)="goToContact()">Contact Us</a></li>
     <li><a (click)="goToAbout()">About</a></li>
   </ul>
-<button class="logout-btn" (click)="goTowelcome()">Logout</button>
+  <button class="logout-btn" (click)="goTowelcome()">Logout</button>
 </nav>
 
 <div class="container">
@@ -35,64 +35,84 @@
       <p>{{ netBalance | currency }}</p>
       <span>{{ status }}</span>
     </div>
+    <div class="card budget" [ngClass]="{'low': remainingBudget <= (budget * 0.2)}">
+      <h3>Budget</h3>
+      <p>{{ remainingBudget | currency }}</p>
+      <small>Initial: {{ budget | currency }}</small>
+    </div>
   </div>
 
-  <!-- Transactions List -->
+  <!-- Budget Warning -->
+  <div *ngIf="budgetWarning" class="budget-warning">
+    ⚠️ Budget is running low or finished!
+  </div>
+  <div *ngIf="budgetExceeded" class="budget-warning">
+    ⚠️ Transaction exceeds budget! Remaining: {{ remainingBudget | currency }}
+  </div>
+
+  <!-- Filters -->
   <div *ngIf="!showForm">
-  <div class="filters">
-    <!-- ✅ Date Range -->
-    <select [(ngModel)]="filterDate">
-      <option value="">Select Date Range</option>
-      <option value="today">Today</option>
-      <option value="this-week">This Week</option>
-      <option value="this-month">This Month</option>
-      <option value="last-month">Last Month</option>
-      <option value="this-year">This Year</option>
-    </select>
+    <div class="filters">
+      <select [(ngModel)]="filterDate" (change)="applyFilters()">
+        <option value="">Select Date Range</option>
+        <option value="today">Today</option>
+        <option value="this-week">This Week</option>
+        <option value="this-month">This Month</option>
+        <option value="last-month">Last Month</option>
+        <option value="this-year">This Year</option>
+      </select>
 
-    <!-- ✅ Categories -->
-    <select [(ngModel)]="filterCategory">
-      <option value="">All Categories</option>
-      <option value="Food">Food</option>
-      <option value="Bills">Bills</option>
-      <option value="Entertainment">Entertainment</option>
-      <option value="Work">Work</option>
-      <option value="Investments">Investments</option>
-      <option value="Other">Other</option>
-    </select>
+      <select [(ngModel)]="filterCategory" (change)="applyFilters()">
+        <option value="">All Categories</option>
+        <option>Food</option>
+        <option>Transport</option>
+        <option>Entertainment</option>
+        <option>Shopping</option>
+        <option>Salary</option>
+        <option>Freelance</option>
+      </select>
 
-    <!-- ✅ Transaction Types -->
-    <select [(ngModel)]="filterType">
-      <option value="">All Types</option>
-      <option value="Income">Income</option>
-      <option value="Expense">Expense</option>
-    </select>
+      <select [(ngModel)]="filterType" (change)="applyFilters()">
+        <option value="">All Types</option>
+        <option>Income</option>
+        <option>Expense</option>
+      </select>
 
-    <button (click)="addTransaction()" class="btn-add">+ Add Transaction</button>
-  </div>
+      <select [(ngModel)]="filterCurrency" (change)="applyFilters()">
+        <option value="">All Currencies</option>
+        <option>EGP</option>
+        <option>EUR</option>
+        <option>KWD</option>
+      </select>
 
+      <!-- بحث شامل -->
+      <input type="text" placeholder="Search anything..."
+             [(ngModel)]="filterText"
+             (input)="applyFilters()" class="search-bar"/>
 
+      <button (click)="addTransaction()" class="btn-add">+ Add Transaction</button>
+    </div>
+
+    <!-- Table -->
     <table class="transactions-table">
       <thead>
         <tr>
           <th>Date</th>
           <th>Description</th>
           <th>Category</th>
-          <th>currency</th>
+          <th>Currency</th>
           <th>Type</th>
           <th>Amount</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let t of transactions; let i = index">
+        <tr *ngFor="let t of filteredTransactions; let i = index">
           <td>{{ t.date }}</td>
           <td>{{ t.description }}</td>
           <td>{{ t.categoryName }}</td>
           <td>{{ t.currency }}</td>
-          <td>
-            <span class="badge" [ngClass]="t.type.toLowerCase()">{{ t.type }}</span>
-          </td>
+          <td><span class="badge" [ngClass]="t.type.toLowerCase()">{{ t.type }}</span></td>
           <td [ngClass]="{'red': t.type==='Expense', 'green': t.type==='Income'}">
             {{ t.amount | currency }}
           </td>
@@ -105,42 +125,38 @@
     </table>
   </div>
 
-  <!-- Add / Edit Transaction Form -->
+  <!-- Add/Edit Form -->
   <div *ngIf="showForm" class="form-container">
     <h2>{{ isEdit ? 'Edit Transaction' : 'Add New Transaction' }}</h2>
     <form [formGroup]="transactionform" (ngSubmit)="saveTransaction(transactionform)">
       <label>Amount</label>
-      <input type="number" [(ngModel)]="newTransaction.amount" name="amount" formControlName="amount" required />
+      <input type="number" formControlName="amount" [(ngModel)]="newTransaction.amount" required />
 
       <label>Type</label>
-      <select [(ngModel)]="newTransaction.type" name="type" formControlName="type" required >
+      <select formControlName="type" [(ngModel)]="newTransaction.type" required>
         <option>Expense</option>
         <option>Income</option>
       </select>
 
-      <label>currency</label>
-      <select [(ngModel)]="newTransaction.currency" name="currency" formControlName="currency" required >
+      <label>Currency</label>
+      <select formControlName="currency" [(ngModel)]="newTransaction.currency" required>
         <option>EGP</option>
         <option>EUR</option>
         <option>KWD</option>
       </select>
 
       <label>Category</label>
-<input type="text"
-       [(ngModel)]="newTransaction.categoryName"
-       name="categoryName"
-       formControlName="categoryName" required />
-
+      <input type="text" formControlName="categoryName" [(ngModel)]="newTransaction.categoryName" required />
 
       <label>Date</label>
-      <input type="date" [(ngModel)]="newTransaction.date" name="date" formControlName="date" required />
+      <input type="date" formControlName="date" [(ngModel)]="newTransaction.date" required />
 
       <label>Description</label>
-      <textarea [(ngModel)]="newTransaction.description" name="description" formControlName="description" required ></textarea>
+      <textarea formControlName="description" [(ngModel)]="newTransaction.description" required></textarea>
 
       <div class="actions">
         <button type="button" (click)="cancelForm()">Cancel</button>
-        <button type="submit" class="save-btn" >
+        <button type="submit" class="save-btn">
           {{ isEdit ? 'Update Transaction' : 'Save Transaction' }}
         </button>
       </div>

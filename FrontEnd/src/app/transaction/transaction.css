@@ -95,3 +95,26 @@ input, select, textarea {
   padding: 8px 16px;
   border-radius: 5px;
 }
+
+/* Budget Card */
+.card.budget { background: #8e44ad; }
+.card.budget.low { background: #c0392b; }
+
+/* Notification banner */
+.budget-warning {
+  background: #e74c3c;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+/* Search Bar */
+.search-bar {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  flex: 1;
+}

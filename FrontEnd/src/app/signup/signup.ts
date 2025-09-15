@@ -29,6 +29,9 @@ export class Signup {
   }
    constructor(private router: Router, private authService: Auth) {}
 
+goToSignup() {
+  this.router.navigate(['/signup']);  
+}
   goTo() {
     this.router.navigate(['/login']);
   }

@@ -103,8 +103,7 @@ export class RecurringTransactionComponent {
   goHome() { this.router.navigate(['/home']); }
   goToTransaction() { this.router.navigate(['/transaction']); }
   goToRecurring() { this.router.navigate(['/recurring-transaction']); }
-  goToDashboard() { this.router.navigate(['/dashboard']); }
   goToContact() { this.router.navigate(['/contect-us']); }
   goToAbout() { this.router.navigate(['/about']); }
-  goTowelcome() { this.router.navigate(['/welcome']); }
+  goTowelcome() { this.router.navigate(['/login']); }
 }

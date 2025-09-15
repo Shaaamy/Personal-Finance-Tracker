@@ -38,10 +38,6 @@ constructor(
     this.router.navigate(['/recurring-transaction']);   
   }
 
-  goToDashboard() {
-    this.router.navigate(['/dashboard']);
-  }
-
   goToContact() {
     this.router.navigate(['/contect-us']);   // ✅ fixed typo
   }
@@ -54,6 +50,6 @@ constructor(
   }
 
   goToRegister() {
-    this.router.navigate(['/welcome']);
+    this.router.navigate(['/login']);
   }
 }

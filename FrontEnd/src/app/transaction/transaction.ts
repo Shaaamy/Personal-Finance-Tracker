@@ -1,10 +1,8 @@
-import { Component,OnInit,Inject , PLATFORM_ID } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
 import { Auth } from '../services/auth';
-import { FormControl, FormGroup,ReactiveFormsModule, Validators } from '@angular/forms';
 
 export interface Transaction {
   date: string;
@@ -18,19 +16,18 @@ export interface Transaction {
 @Component({
   selector: 'app-transaction',
   standalone: true,
-  imports: [CommonModule, FormsModule,ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './transaction.html',
   styleUrls: ['./transaction.css']
 })
 export class TransactionComponent {
-
-  transactionform:FormGroup = new FormGroup({
+  transactionform = new FormGroup({
     amount: new FormControl('', Validators.required),
     type: new FormControl('Expense', Validators.required),
+    currency: new FormControl('EGP', Validators.required),
     categoryName: new FormControl('', Validators.required),
     date: new FormControl('', Validators.required),
-    description: new FormControl('', Validators.required),
-    currency: new FormControl('EGP', Validators.required)
+    description: new FormControl('', Validators.required)
   });
 
   isBrowser: boolean;
@@ -38,7 +35,7 @@ export class TransactionComponent {
   isEdit = false;
   editIndex: number | null = null;
 
-  // ✅ Added for filter controls
+  // Filters
   filterDate = '';
   filterCategory = '';
   filterType = '';
@@ -46,88 +43,74 @@ export class TransactionComponent {
   filterText = '';
   filteredTransactions: Transaction[] = [];
 
-  // ✅ Error flag for form validation
-  formError = false;
-
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router,
-    private authService: Auth
-  ) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-    this.filteredTransactions = this.transactions;
-  }
+  // Budget
+  budget = 5000;
+  remainingBudget = 5000;
+  budgetWarning = false;
+  budgetExceeded = false;
 
   transactions: Transaction[] = [
-    { date: '2023-10-26', description: 'Groceries at FreshMart',currency:'EGP', categoryName: 'Food', type: 'Expense', amount: 54.20 },
-    { date: '2023-10-25', description: 'Monthly Salary',currency:'EGP', categoryName: 'Work', type: 'Income', amount: 3200.00 },
-    { date: '2023-10-24', description: 'Dinner with Friends',currency:'EGP', categoryName: 'Entertainment', type: 'Expense', amount: 75.50 },
-    { date: '2023-10-23', description: 'Utility Bill Payment',currency:'EGP', categoryName: 'Bills', type: 'Expense', amount: 112.75 },
-    { date: '2023-10-22', description: 'Investment Dividend',currency:'EGP', categoryName: 'Investments', type: 'Income', amount: 150.00 },
+    { date: '2023-10-26', description: 'Groceries', currency: 'EGP', categoryName: 'Food', type: 'Expense', amount: 54.20 },
+    { date: '2023-10-25', description: 'Monthly Salary', currency: 'EGP', categoryName: 'Work', type: 'Income', amount: 3200.00 },
   ];
 
   newTransaction: Transaction = {
-    date: '',
-    description: '',
-    currency: '',
-    categoryName: '',
-    type: 'Expense',
-    amount: 0
+    date: '', description: '', currency: 'EGP', categoryName: '', type: 'Expense', amount: 0
   };
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object,
+              private router: Router,
+              private authService: Auth) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    this.filteredTransactions = [...this.transactions];
+    this.updateBudget();
+  }
+
+  // Totals
   get totalIncome(): number {
-    return this.transactions.filter(t => t.type === 'Income').reduce((s, t) => s + t.amount, 0);
+    return this.transactions.filter(t => t.type === 'Income')
+                            .reduce((s, t) => s + t.amount, 0);
   }
   get totalExpense(): number {
-    return this.transactions.filter(t => t.type === 'Expense').reduce((s, t) => s + t.amount, 0);
+    return this.transactions.filter(t => t.type === 'Expense')
+                            .reduce((s, t) => s + t.amount, 0);
   }
-  get netBalance(): number { return this.totalIncome - this.totalExpense; }
-  get status(): string { return this.netBalance >= 0 ? 'Profit' : 'Loss'; }
-
-  isAdmin(): boolean {
-    return this.authService.isAdmin();
+  get netBalance(): number {
+    return this.totalIncome - this.totalExpense;
+  }
+  get status(): string {
+    return this.netBalance >= 0 ? 'Profit' : 'Loss';
   }
 
   addTransaction() {
     this.showForm = true;
     this.isEdit = false;
-    this.newTransaction = { date: '', description: '', currency:'', categoryName: '', type: 'Expense', amount: 0 };
-    this.formError = false;
-    this.transactionform.reset({ type:'Expense', currency:'EGP' });
+    this.newTransaction = { date: '', description: '', currency: 'EGP', categoryName: '', type: 'Expense', amount: 0 };
+    this.transactionform.reset({ type: 'Expense', currency: 'EGP' });
   }
 
-  // ✅ Now checks that all required fields are filled
-  saveTransaction(transactionForm: FormGroup) {
-    if (transactionForm.invalid) {
-      this.formError = true;
+  saveTransaction(form: FormGroup) {
+    if (form.invalid) return;
+
+    const temp = { ...this.newTransaction };
+    // تحقق من تجاوز الميزانية إذا كانت معاملة مصروف
+    if (temp.type === 'Expense' && (this.totalExpense + temp.amount) > this.budget) {
+      this.budgetExceeded = true;
       return;
     }
-    this.formError = false;
-
-    if (!this.authService.getAccessToken()) {
-      console.error('No token found. Cannot save transaction.');
-      return;
-    }
-
-    this.authService.transaction(transactionForm.value).subscribe({
-      next: (response) => console.log('Transaction saved successfully', response),
-      error: (err) => {
-        console.error('Save Transaction Error:', err);
-        if (err.status === 403) {
-          console.error('⚠️ 403 Forbidden: Check API auth/roles or token expiry');
-        }
-      }
-    });
+    this.budgetExceeded = false;
 
     if (this.isEdit && this.editIndex !== null) {
-      this.transactions[this.editIndex] = { ...this.newTransaction };
+      this.transactions[this.editIndex] = temp;
     } else {
-      this.transactions.unshift({ ...this.newTransaction });
+      this.transactions.unshift(temp);
     }
-    this.filteredTransactions = this.transactions;
+
+    this.applyFilters();
     this.showForm = false;
     this.isEdit = false;
     this.editIndex = null;
+    this.updateBudget();
   }
 
   editTransaction(index: number) {
@@ -135,58 +118,57 @@ export class TransactionComponent {
     this.isEdit = true;
     this.editIndex = index;
     this.newTransaction = { ...this.transactions[index] };
-    this.formError = false;
-    this.transactionform.setValue({ ...this.transactions[index] });
+    this.transactionform.setValue({
+      ...this.transactions[index],
+      amount: this.transactions[index].amount.toString()
+    });
   }
 
   deleteTransaction(index: number) {
     this.transactions.splice(index, 1);
     this.applyFilters();
+    this.updateBudget();
   }
 
   cancelForm() {
     this.showForm = false;
     this.isEdit = false;
     this.editIndex = null;
-    this.formError = false;
+    this.budgetExceeded = false;
   }
 
-  // ✅ Filter method
+  // فلترة شاملة
   applyFilters() {
     this.filteredTransactions = this.transactions.filter(t => {
-      return (!this.filterCategory || t.categoryName.includes(this.filterCategory)) &&
-             (!this.filterType || t.type === this.filterType) &&
-             (!this.filterCurrency || t.currency === this.filterCurrency) &&
-             (!this.filterText || t.description.toLowerCase().includes(this.filterText.toLowerCase()));
+      const textMatch = this.filterText
+        ? Object.values(t).some(val =>
+            val.toString().toLowerCase().includes(this.filterText.toLowerCase()))
+        : true;
+
+      const categoryMatch = !this.filterCategory || t.categoryName === this.filterCategory;
+      const typeMatch = !this.filterType || t.type === this.filterType;
+      const currencyMatch = !this.filterCurrency || t.currency === this.filterCurrency;
+
+      return textMatch && categoryMatch && typeMatch && currencyMatch;
     });
   }
 
-  goHome() {
-    this.router.navigate(['/home']);   
+  updateBudget() {
+    const expenses = this.transactions.filter(t => t.type === 'Expense')
+                                      .reduce((s, t) => s + t.amount, 0);
+    this.remainingBudget = this.budget - expenses;
+    this.budgetWarning = this.remainingBudget <= (this.budget * 0.1) || this.remainingBudget <= 0;
+
+    if (this.budgetWarning && this.isBrowser && Notification.permission === 'granted') {
+      new Notification('Budget Alert', { body: 'Your budget is running low or finished!' });
+    }
   }
 
-  goToTransaction() {
-    this.router.navigate(['/transaction']);   
-  }
-
-  goToRecurring() {
-    this.router.navigate(['/recurring-transaction']);   
-  }
-
-  goToDashboard() {
-    this.router.navigate(['/dashboard']);
-  }
-
-  goToContact() {
-    this.router.navigate(['/contect-us']);   // ✅ fixed typo
-  }
-
-  goToAbout() {
-    this.router.navigate(['/about']);
-  }
-
-  goTowelcome() {
-    this.router.navigate(['/welcome']);
-  }
-  
+  // Navigation
+  goHome() { this.router.navigate(['/home']); }
+  goToTransaction() { this.router.navigate(['/transaction']); }
+  goToRecurring() { this.router.navigate(['/recurring-transaction']); }
+  goToContact() { this.router.navigate(['/contect-us']); }
+  goToAbout() { this.router.navigate(['/about']); }
+  goTowelcome() { this.router.navigate(['/login']); }
 }
