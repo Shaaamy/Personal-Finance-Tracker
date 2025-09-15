@@ -1,4 +1,4 @@
-import { Component,OnInit,Inject , PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -26,15 +26,14 @@ export class RecurringTransactionComponent {
   isEdit = false;
   editIndex: number | null = null;
 
-
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
-    private authService : Auth
+    private authService: Auth
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
-  
+
   transactions: RecurringTransaction[] = [
     { name: 'Monthly Rent', amount: 1500.00, category: 'Housing', frequency: 'Monthly', nextOccurrence: '2024-07-01' },
     { name: 'Gym Membership', amount: 45.99, category: 'Health', frequency: 'Monthly', nextOccurrence: '2024-06-15' },
@@ -51,24 +50,23 @@ export class RecurringTransactionComponent {
     nextOccurrence: ''
   };
 
-  // Calculate approximate total monthly recurring expenses
   get totalMonthlyExpenses(): number {
     return this.transactions.reduce((sum, t) => {
       if (t.frequency === 'Monthly') {
         return sum + t.amount;
       } else if (t.frequency === 'Weekly') {
-        return sum + t.amount * 4; // Approximate 4 weeks per month
+        return sum + t.amount * 4;
       } else if (t.frequency === 'Yearly') {
         return sum + t.amount / 12;
       }
       return sum;
     }, 0);
   }
- // ====== Role-based Access ======
- 
-isAdmin(): boolean {
+
+  isAdmin(): boolean {
     return this.authService.isAdmin();
   }
+
   addTransaction() {
     this.showForm = true;
     this.isEdit = false;
@@ -100,31 +98,13 @@ isAdmin(): boolean {
   cancelForm() {
     this.showForm = false;
     this.isEdit = false;
-  // Removed duplicate constructor
   }
 
-  
-  goHome() {
-    this.router.navigate(['/home']);   
-  }
-
-  goToTransaction() {
-    this.router.navigate(['/transaction']);   
-  }
-
-  goToRecurring() {
-    this.router.navigate(['/recurring-transaction']);   
-  }
-
-  goToDashboard() {
-    this.router.navigate(['/dashboard']);
-  }
-
-  goToContact() {
-    this.router.navigate(['/contect-us']);   // ✅ fixed typo
-  }
-
-  goToAbout() {
-    this.router.navigate(['/about']);
-  }
+  goHome() { this.router.navigate(['/home']); }
+  goToTransaction() { this.router.navigate(['/transaction']); }
+  goToRecurring() { this.router.navigate(['/recurring-transaction']); }
+  goToDashboard() { this.router.navigate(['/dashboard']); }
+  goToContact() { this.router.navigate(['/contect-us']); }
+  goToAbout() { this.router.navigate(['/about']); }
+  goTowelcome() { this.router.navigate(['/welcome']); }
 }

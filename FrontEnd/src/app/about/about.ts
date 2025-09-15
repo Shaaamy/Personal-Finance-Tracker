@@ -25,9 +25,6 @@ constructor(
   isAdmin(): boolean {
     return this.authService.isAdmin();
   }
-   goToWelcome() {
-    this.router.navigate(['/welcome']);   
-  }
 
   goHome() {
     this.router.navigate(['/home']);   
@@ -57,6 +54,6 @@ constructor(
   }
 
   goToRegister() {
-    this.router.navigate(['/signup']);
+    this.router.navigate(['/welcome']);
   }
 }

@@ -1,15 +1,14 @@
 <div class="container">
   <header>
     <img src="https://agency.entasher.com/Images/actualsize/2024/5/Logo_847363b7554a46b48559c222f4f9053c.png" alt="Logo" class="logo">
-    <nav>
-  <a (click)="goToWelcome()">welcome</a>      
+    <nav>      
   <a (click)="goToHome()">Home</a>
   <a (click)="goToTransaction()">Transaction</a>
   <a (click)="goToRecurring()">Recurring Transactions</a>
   <a *ngIf="isAdmin()"(click)="goToDashboard()">Dashboard</a>
   <a (click)="goToContact()">Contact Us</a>
   <a (click)="goToAbout()">About</a>
-  <a (click)="goToLogin()" class="login-btn">Login</a>
+  <a (click)="goToLogin()" class="login-btn">Logout</a>
 </nav>
 
   </header>

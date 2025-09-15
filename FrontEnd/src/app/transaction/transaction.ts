@@ -4,17 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { Auth } from '../services/auth';
-import { FormControl, FormGroup,ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup,ReactiveFormsModule, Validators } from '@angular/forms';
 
 export interface Transaction {
   date: string;
   description: string;
   currency: string;
-  categoryName: string;   // ✅ بدل category
+  categoryName: string;
   type: string;
   amount: number;
 }
-
 
 @Component({
   selector: 'app-transaction',
@@ -25,14 +24,13 @@ export interface Transaction {
 })
 export class TransactionComponent {
 
-  // ✅ Added explicit default values to avoid undefined issues
   transactionform:FormGroup = new FormGroup({
-    amount: new FormControl(''),
-    type: new FormControl('Expense'),
-    categoryName: new FormControl(''),
-    date: new FormControl(''),
-    description: new FormControl(''),
-    currency: new FormControl('EGP')
+    amount: new FormControl('', Validators.required),
+    type: new FormControl('Expense', Validators.required),
+    categoryName: new FormControl('', Validators.required),
+    date: new FormControl('', Validators.required),
+    description: new FormControl('', Validators.required),
+    currency: new FormControl('EGP', Validators.required)
   });
 
   isBrowser: boolean;
@@ -40,12 +38,24 @@ export class TransactionComponent {
   isEdit = false;
   editIndex: number | null = null;
 
+  // ✅ Added for filter controls
+  filterDate = '';
+  filterCategory = '';
+  filterType = '';
+  filterCurrency = '';
+  filterText = '';
+  filteredTransactions: Transaction[] = [];
+
+  // ✅ Error flag for form validation
+  formError = false;
+
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router,
     private authService: Auth
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
+    this.filteredTransactions = this.transactions;
   }
 
   transactions: Transaction[] = [
@@ -56,59 +66,51 @@ export class TransactionComponent {
     { date: '2023-10-22', description: 'Investment Dividend',currency:'EGP', categoryName: 'Investments', type: 'Income', amount: 150.00 },
   ];
 
- newTransaction: Transaction = {
-  date: '',
-  description: '',
-  currency: '',
-  categoryName: '',       // ✅
-  type: 'Expense',
-  amount: 0
-};
+  newTransaction: Transaction = {
+    date: '',
+    description: '',
+    currency: '',
+    categoryName: '',
+    type: 'Expense',
+    amount: 0
+  };
 
   get totalIncome(): number {
-    return this.transactions
-      .filter(t => t.type === 'Income')
-      .reduce((sum, t) => sum + t.amount, 0);
+    return this.transactions.filter(t => t.type === 'Income').reduce((s, t) => s + t.amount, 0);
   }
-
   get totalExpense(): number {
-    return this.transactions
-      .filter(t => t.type === 'Expense')
-      .reduce((sum, t) => sum + t.amount, 0);
+    return this.transactions.filter(t => t.type === 'Expense').reduce((s, t) => s + t.amount, 0);
   }
+  get netBalance(): number { return this.totalIncome - this.totalExpense; }
+  get status(): string { return this.netBalance >= 0 ? 'Profit' : 'Loss'; }
 
-  get netBalance(): number {
-    return this.totalIncome - this.totalExpense;
-  }
-
-  get status(): string {
-    return this.netBalance >= 0 ? 'Profit' : 'Loss';
-  }
-
-  // ====== Role-based Access ======
   isAdmin(): boolean {
     return this.authService.isAdmin();
   }
 
-  // ====== Transaction Management ======
   addTransaction() {
     this.showForm = true;
     this.isEdit = false;
-    this.newTransaction = { date: '', description: '',currency:'', categoryName: '', type: 'Expense', amount: 0 };
+    this.newTransaction = { date: '', description: '', currency:'', categoryName: '', type: 'Expense', amount: 0 };
+    this.formError = false;
+    this.transactionform.reset({ type:'Expense', currency:'EGP' });
   }
 
+  // ✅ Now checks that all required fields are filled
   saveTransaction(transactionForm: FormGroup) {
-    // ✅ Added check for token & 403 handling
+    if (transactionForm.invalid) {
+      this.formError = true;
+      return;
+    }
+    this.formError = false;
+
     if (!this.authService.getAccessToken()) {
       console.error('No token found. Cannot save transaction.');
       return;
     }
-    
 
     this.authService.transaction(transactionForm.value).subscribe({
-      next: (response) => {
-        console.log('Transaction saved successfully', response);
-      },
+      next: (response) => console.log('Transaction saved successfully', response),
       error: (err) => {
         console.error('Save Transaction Error:', err);
         if (err.status === 403) {
@@ -122,6 +124,7 @@ export class TransactionComponent {
     } else {
       this.transactions.unshift({ ...this.newTransaction });
     }
+    this.filteredTransactions = this.transactions;
     this.showForm = false;
     this.isEdit = false;
     this.editIndex = null;
@@ -132,18 +135,32 @@ export class TransactionComponent {
     this.isEdit = true;
     this.editIndex = index;
     this.newTransaction = { ...this.transactions[index] };
+    this.formError = false;
+    this.transactionform.setValue({ ...this.transactions[index] });
   }
 
   deleteTransaction(index: number) {
     this.transactions.splice(index, 1);
+    this.applyFilters();
   }
 
   cancelForm() {
     this.showForm = false;
     this.isEdit = false;
     this.editIndex = null;
+    this.formError = false;
   }
- 
+
+  // ✅ Filter method
+  applyFilters() {
+    this.filteredTransactions = this.transactions.filter(t => {
+      return (!this.filterCategory || t.categoryName.includes(this.filterCategory)) &&
+             (!this.filterType || t.type === this.filterType) &&
+             (!this.filterCurrency || t.currency === this.filterCurrency) &&
+             (!this.filterText || t.description.toLowerCase().includes(this.filterText.toLowerCase()));
+    });
+  }
+
   goHome() {
     this.router.navigate(['/home']);   
   }
@@ -168,4 +185,8 @@ export class TransactionComponent {
     this.router.navigate(['/about']);
   }
 
+  goTowelcome() {
+    this.router.navigate(['/welcome']);
+  }
+  
 }

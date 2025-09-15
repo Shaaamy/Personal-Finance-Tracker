@@ -1,1 +1,58 @@
-<p>dashboard works!</p>
+<!-- Navbar (same links as other pages) -->
+<nav class="navbar">
+  <div class="nav-left">
+    <a href="#">
+      <img src="https://agency.entasher.com/Images/actualsize/2024/5/Logo_847363b7554a46b48559c222f4f9053c.png" alt="Logo" class="logo">
+    </a>
+    <span class="brand">Finance</span>
+  </div>
+  <ul class="nav-links">
+    <li><a (click)="goHome()">Home</a></li>
+    <li><a (click)="goToTransaction()">Transactions</a></li>
+    <li><a (click)="goToRecurring()">Recurring Transactions</a></li>
+    <li><a *ngIf="isAdmin()" (click)="goToDashboard()">Dashboard</a></li>
+    <li><a (click)="goToContact()">Contact Us</a></li>
+    <li><a (click)="goToAbout()">About</a></li>
+  </ul>
+  <div class="auth-buttons">
+    <button class="register-btn" (click)="goToRegister()">Logout</button>
+  </div>
+</nav>
+
+<!-- Dashboard Content -->
+<div class="dashboard-container">
+  <h1 class="title">Financial Dashboard</h1>
+  <p class="subtitle">Quick overview of Transactions & Recurring Payments</p>
+
+  <div class="stats-cards">
+    <div class="stat-card">
+      <h3>Total Transactions</h3>
+      <p class="number">1,250</p>
+    </div>
+    <div class="stat-card">
+      <h3>Total Recurring</h3>
+      <p class="number">380</p>
+    </div>
+    <div class="stat-card">
+      <h3>Monthly Savings</h3>
+      <p class="number">$5,600</p>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h2>Transactions by Month</h2>
+      <canvas #transactionsChart></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h2>Recurring Expense Split</h2>
+      <canvas #recurringChart></canvas>
+    </div>
+
+    <div class="chart-card full-width">
+      <h2>Monthly Savings Trend</h2>
+      <canvas #lineChart></canvas>
+    </div>
+  </div>
+</div>

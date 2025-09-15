@@ -14,7 +14,7 @@
     <li><a (click)="goToContact()">Contact Us</a></li>
     <li><a (click)="goToAbout()">About</a></li>
   </ul>
-  <button class="logout-btn">Logout</button>
+<button class="logout-btn" (click)="goTowelcome()">Logout</button>
 </nav>
 
 <div class="container">
@@ -39,20 +39,46 @@
 
   <!-- Transactions List -->
   <div *ngIf="!showForm">
-    <div class="filters">
-      <select><option>Select Date Range</option></select>
-      <select><option>All Categories</option></select>
-      <select><option>All Types</option></select>
-      <button (click)="addTransaction()" class="btn-add">+ Add Transaction</button>
-    </div>
+  <div class="filters">
+    <!-- ✅ Date Range -->
+    <select [(ngModel)]="filterDate">
+      <option value="">Select Date Range</option>
+      <option value="today">Today</option>
+      <option value="this-week">This Week</option>
+      <option value="this-month">This Month</option>
+      <option value="last-month">Last Month</option>
+      <option value="this-year">This Year</option>
+    </select>
+
+    <!-- ✅ Categories -->
+    <select [(ngModel)]="filterCategory">
+      <option value="">All Categories</option>
+      <option value="Food">Food</option>
+      <option value="Bills">Bills</option>
+      <option value="Entertainment">Entertainment</option>
+      <option value="Work">Work</option>
+      <option value="Investments">Investments</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <!-- ✅ Transaction Types -->
+    <select [(ngModel)]="filterType">
+      <option value="">All Types</option>
+      <option value="Income">Income</option>
+      <option value="Expense">Expense</option>
+    </select>
+
+    <button (click)="addTransaction()" class="btn-add">+ Add Transaction</button>
+  </div>
+
 
     <table class="transactions-table">
       <thead>
         <tr>
           <th>Date</th>
           <th>Description</th>
-          <th>currency</th>
           <th>Category</th>
+          <th>currency</th>
           <th>Type</th>
           <th>Amount</th>
           <th>Actions</th>
@@ -84,16 +110,16 @@
     <h2>{{ isEdit ? 'Edit Transaction' : 'Add New Transaction' }}</h2>
     <form [formGroup]="transactionform" (ngSubmit)="saveTransaction(transactionform)">
       <label>Amount</label>
-      <input type="number" [(ngModel)]="newTransaction.amount" name="amount" formControlName="amount" />
+      <input type="number" [(ngModel)]="newTransaction.amount" name="amount" formControlName="amount" required />
 
       <label>Type</label>
-      <select [(ngModel)]="newTransaction.type" name="type" formControlName="type">
+      <select [(ngModel)]="newTransaction.type" name="type" formControlName="type" required >
         <option>Expense</option>
         <option>Income</option>
       </select>
 
       <label>currency</label>
-      <select [(ngModel)]="newTransaction.currency" name="currency" formControlName="currency">
+      <select [(ngModel)]="newTransaction.currency" name="currency" formControlName="currency" required >
         <option>EGP</option>
         <option>EUR</option>
         <option>KWD</option>
@@ -103,14 +129,14 @@
 <input type="text"
        [(ngModel)]="newTransaction.categoryName"
        name="categoryName"
-       formControlName="categoryName" />
+       formControlName="categoryName" required />
 
 
       <label>Date</label>
-      <input type="date" [(ngModel)]="newTransaction.date" name="date" formControlName="date" />
+      <input type="date" [(ngModel)]="newTransaction.date" name="date" formControlName="date" required />
 
       <label>Description</label>
-      <textarea [(ngModel)]="newTransaction.description" name="description" formControlName="description"></textarea>
+      <textarea [(ngModel)]="newTransaction.description" name="description" formControlName="description" required ></textarea>
 
       <div class="actions">
         <button type="button" (click)="cancelForm()">Cancel</button>

@@ -64,10 +64,6 @@ export class HomeComponent implements OnInit {   // ✅ better to name it HomeCo
     if (!this.isBrowser) return false;
     return document.cookie.includes('token='); // or your actual cookie name
   }
-
- goToWelcome() {
-    this.router.navigate(['/welcome']);   
-  }
   goToHome() {
     this.router.navigate(['/home']);   
   }

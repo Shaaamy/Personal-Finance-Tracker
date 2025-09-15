@@ -7,14 +7,14 @@
     <span class="brand">Finance</span>
   </div>
   <ul class="nav-links">
-     <li><a (click)="goHome()">Home</a></li>
-     <li><a (click)="goToTransaction()"> Transactions</a></li>
+    <li><a (click)="goHome()">Home</a></li>
+    <li><a (click)="goToTransaction()"> Transactions</a></li>
     <li><a (click)="goToRecurring()">Recurring Transactions</a></li>
-    <li><a *ngIf="isAdmin()"(click)="goToDashboard()">Dashboard</a></li>
+    <li><a (click)="goToDashboard()">Dashboard</a></li>
     <li><a (click)="goToContact()">Contact Us</a></li>
     <li><a (click)="goToAbout()">About</a></li>
   </ul>
-  <button class="logout-btn">Logout</button>
+  <button class="logout-btn" (click)="goTowelcome()">Logout</button>
 </nav>
 
 <div class="container">
@@ -67,32 +67,34 @@
   <div *ngIf="showForm" class="form-container">
     <h2>{{ isEdit ? 'Edit Transaction' : 'Add New Transaction' }}</h2>
     <p>Fill in the details for your new recurring transaction.</p>
-    <form>
+
+    <!-- ✨ added #formRef="ngForm" for validation tracking -->
+    <form #formRef="ngForm">
       <label>Description</label>
-      <input type="text" [(ngModel)]="newTransaction.name" name="name" />
+      <input type="text" [(ngModel)]="newTransaction.name" name="name" required />
 
       <label>Amount</label>
-      <input type="number" [(ngModel)]="newTransaction.amount" name="amount" />
+      <input type="number" [(ngModel)]="newTransaction.amount" name="amount" required />
 
       <label>Category</label>
-      <input type="text" [(ngModel)]="newTransaction.category" name="category" />
+      <input type="text" [(ngModel)]="newTransaction.category" name="category" required />
 
       <label>Frequency</label>
-      <select [(ngModel)]="newTransaction.frequency" name="frequency">
-        <option>daily </option>
-        <option>weekly </option>
-        <option>monthly </option>
-        <option>half annual </option>
-        <option>annual </option>
-        
+      <select [(ngModel)]="newTransaction.frequency" name="frequency" required>
+        <option>daily</option>
+        <option>weekly</option>
+        <option>monthly</option>
+        <option>half annual</option>
+        <option>annual</option>
       </select>
 
       <label>Next Payment Date</label>
-      <input type="date" [(ngModel)]="newTransaction.nextOccurrence" name="nextOccurrence" />
+      <input type="date" [(ngModel)]="newTransaction.nextOccurrence" name="nextOccurrence" required />
 
       <div class="actions">
         <button type="button" (click)="cancelForm()">Cancel</button>
-        <button type="button" class="save-btn" (click)="saveTransaction()">
+        <!-- ✨ disable save until form is valid -->
+        <button type="button" class="save-btn" (click)="saveTransaction()" [disabled]="!formRef.valid">
           {{ isEdit ? 'Update Transaction' : 'Save Transaction' }}
         </button>
       </div>

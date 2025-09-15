@@ -26,10 +26,6 @@ constructor(
     return this.authService.isAdmin();
   }
 
-  goToWelcome() {
-    this.router.navigate(['/welcome']);   
-  }
-
   goHome() {
     this.router.navigate(['/home']);   
   }
@@ -53,4 +49,6 @@ constructor(
   goToAbout() {
     this.router.navigate(['/about']);
   }
+
+  
 }
