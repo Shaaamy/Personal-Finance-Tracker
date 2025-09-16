@@ -79,3 +79,10 @@ input {
   font-weight: bold;
   text-decoration: none;
 }
+
+/* رسائل الأخطاء */
+.error {
+  color: #d32f2f;
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+}
