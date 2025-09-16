@@ -8,7 +8,7 @@
   </div>
   <ul class="nav-links">
     <li><a (click)="goHome()">Home</a></li>
-    <li><a (click)="goToTransaction()"> Transactions</a></li>
+    <li><a (click)="goToTransaction()">Transactions</a></li>
     <li><a (click)="goToRecurring()">Recurring Transactions</a></li>
     <li><a (click)="goToContact()">Contact Us</a></li>
     <li><a (click)="goToAbout()">About</a></li>
@@ -19,55 +19,97 @@
 <div class="container">
   <h2>Recurring Transactions</h2>
 
-  <!-- Summary Section -->
-  <div class="summary">
-    <div class="card expense">
-      <h3>Total Monthly Recurring Expenses (Approx.)</h3>
-      <p>{{ totalMonthlyExpenses | currency }}</p>
-    </div>
+  <!-- 🆕 Summary Boxes -->
+  <div class="summary-boxes">
+    <div class="card daily"><h3>Daily</h3><p>{{ dailyTotal | currency }}</p></div>
+    <div class="card weekly"><h3>Weekly</h3><p>{{ weeklyTotal | currency }}</p></div>
+    <div class="card monthly"><h3>Monthly</h3><p>{{ monthlyTotal | currency }}</p></div>
+    <div class="card half"><h3>Half-Annual</h3><p>{{ halfAnnualTotal | currency }}</p></div>
+    <div class="card annual"><h3>Annual</h3><p>{{ annualTotal | currency }}</p></div>
   </div>
 
-  <!-- Recurring Transactions List -->
+  <!-- 🆕 Filters (new block inserted) -->
   <div *ngIf="!showForm">
     <div class="filters">
-      <button (click)="addTransaction()" class="btn-add">+ Add New Transaction</button>
+      <!-- Date Range -->
+      <select [(ngModel)]="filterDate" (change)="applyFilters()">
+        <option value="">Frequancy</option>
+        <option value="today">daily</option>
+        <option value="this-week">weekly</option>
+        <option value="this-month"> Monthly</option>
+        <option value="last-month">annual</option>
+        <option value="this-year">Half-Annual</option>
+      </select>
+
+      <!-- Category -->
+      <select [(ngModel)]="filterCategory" (change)="applyFilters()">
+        <option value="">All Categories</option>
+       <option>Food</option>
+        <option>Transport</option>
+        <option>Entertainment</option>
+        <option>Shopping</option>
+        <option>Salary</option>
+        <option>Freelance</option>
+      </select>
+
+      <!-- Type -->
+      <select [(ngModel)]="filterType" (change)="applyFilters()">
+        <option value="">Names</option>
+        <option>Monthly Rent</option>
+        <option>Gym Membership</option>
+        <option>Netflix</option>
+        <option>Weekly Groceries</option>
+        <option>Annual License</option>
+      </select>
+
+      
+
+      <!-- Extra Filter -->
+      <select [(ngModel)]="filterExtra" (change)="applyFilters()">
+        <option value="">Select Option</option>
+        <option>All Categories</option>
+        <option>Name</option>
+        <option>Frequency</option>
+      </select>
     </div>
-
-    <h3>Upcoming Recurring Transactions</h3>
-
-    <table class="transactions-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Amount</th>
-          <th>Category</th>
-          <th>Frequency</th>
-          <th>Next Occurrence</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let t of transactions; let i = index">
-          <td>{{ t.name }}</td>
-          <td class="red">{{ t.amount | currency }}</td>
-          <td>{{ t.category }}</td>
-          <td>{{ t.frequency }}</td>
-          <td>{{ t.nextOccurrence }}</td>
-          <td>
-            <button (click)="editTransaction(i)">✏️</button>
-            <button (click)="deleteTransaction(i)">🗑️</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 
-  <!-- Add / Edit Recurring Transaction Form -->
+  <!-- Search + Add -->
+  <div *ngIf="!showForm" class="filters" style="margin-top:15px;">
+    <input type="text"
+           placeholder="Search by name, category, frequency or amount..."
+           [(ngModel)]="searchTerm"
+           (input)="applyFilters()"
+           class="search-bar" />
+    <button (click)="addTransaction()" class="btn-add">+ Add New Transaction</button>
+  </div>
+
+  <!-- Table -->
+  <h3 *ngIf="!showForm">Upcoming Recurring Transactions</h3>
+  <table class="transactions-table" *ngIf="!showForm">
+    <thead>
+      <tr>
+        <th>Name</th><th>Amount</th><th>Category</th><th>Frequency</th><th>Next Occurrence</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of filteredTransactions; let i = index">
+        <td>{{ t.name }}</td>
+        <td class="red">{{ t.amount | currency }}</td>
+        <td>{{ t.category }}</td>
+        <td>{{ t.frequency }}</td>
+        <td>{{ t.nextOccurrence }}</td>
+        <td>
+          <button (click)="editTransaction(i)">✏️</button>
+          <button (click)="deleteTransaction(i)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Form -->
   <div *ngIf="showForm" class="form-container">
     <h2>{{ isEdit ? 'Edit Transaction' : 'Add New Transaction' }}</h2>
-    <p>Fill in the details for your new recurring transaction.</p>
-
-    <!-- ✨ added #formRef="ngForm" for validation tracking -->
     <form #formRef="ngForm">
       <label>Description</label>
       <input type="text" [(ngModel)]="newTransaction.name" name="name" required />
@@ -80,11 +122,8 @@
 
       <label>Frequency</label>
       <select [(ngModel)]="newTransaction.frequency" name="frequency" required>
-        <option>daily</option>
-        <option>weekly</option>
-        <option>monthly</option>
-        <option>half annual</option>
-        <option>annual</option>
+        <option>Daily</option><option>Weekly</option><option>Monthly</option>
+        <option>Half-Annual</option><option>Annual</option>
       </select>
 
       <label>Next Payment Date</label>
@@ -92,7 +131,6 @@
 
       <div class="actions">
         <button type="button" (click)="cancelForm()">Cancel</button>
-        <!-- ✨ disable save until form is valid -->
         <button type="button" class="save-btn" (click)="saveTransaction()" [disabled]="!formRef.valid">
           {{ isEdit ? 'Update Transaction' : 'Save Transaction' }}
         </button>

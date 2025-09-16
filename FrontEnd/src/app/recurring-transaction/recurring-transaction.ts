@@ -1,8 +1,7 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
 import { Auth } from '../services/auth';
 
 export interface RecurringTransaction {
@@ -21,50 +20,71 @@ export interface RecurringTransaction {
   styleUrls: ['./recurring-transaction.css']
 })
 export class RecurringTransactionComponent {
-  isBrowser: boolean;
+  isBrowser = false;
   showForm = false;
   isEdit = false;
   editIndex: number | null = null;
 
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private router: Router,
-    private authService: Auth
-  ) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-  }
+  // 🆕 Filters
+  filterDate = '';
+  filterCategory = '';
+  filterType = '';
+  filterCurrency = '';
+  filterExtra = '';
+
+  searchTerm = '';
+  filteredTransactions: RecurringTransaction[] = [];
 
   transactions: RecurringTransaction[] = [
-    { name: 'Monthly Rent', amount: 1500.00, category: 'Housing', frequency: 'Monthly', nextOccurrence: '2024-07-01' },
-    { name: 'Gym Membership', amount: 45.99, category: 'Health', frequency: 'Monthly', nextOccurrence: '2024-06-15' },
-    { name: 'Netflix Subscription', amount: 19.99, category: 'Entertainment', frequency: 'Monthly', nextOccurrence: '2024-06-25' },
-    { name: 'Weekly Groceries Budget', amount: 120.00, category: 'Food', frequency: 'Weekly', nextOccurrence: '2024-06-10' },
-    { name: 'Annual Software License', amount: 299.00, category: 'Utilities', frequency: 'Yearly', nextOccurrence: '2024-08-07' },
+    { name: 'Monthly Rent', amount: 1500, category: 'Housing', frequency: 'Monthly', nextOccurrence: '2025-10-01' },
+    { name: 'Gym Membership', amount: 45.99, category: 'Health', frequency: 'Monthly', nextOccurrence: '2025-09-20' },
+    { name: 'Netflix', amount: 19.99, category: 'Entertainment', frequency: 'Monthly', nextOccurrence: '2025-09-25' },
+    { name: 'Weekly Groceries', amount: 120, category: 'Food', frequency: 'Weekly', nextOccurrence: '2025-09-18' },
+    { name: 'Annual License', amount: 299, category: 'Utilities', frequency: 'Annual', nextOccurrence: '2025-12-30' }
   ];
 
-  newTransaction: RecurringTransaction = {
-    name: '',
-    amount: 0,
-    category: '',
-    frequency: 'Monthly',
-    nextOccurrence: ''
-  };
+  newTransaction: RecurringTransaction = { name: '', amount: 0, category: '', frequency: 'Monthly', nextOccurrence: '' };
 
-  get totalMonthlyExpenses(): number {
-    return this.transactions.reduce((sum, t) => {
-      if (t.frequency === 'Monthly') {
-        return sum + t.amount;
-      } else if (t.frequency === 'Weekly') {
-        return sum + t.amount * 4;
-      } else if (t.frequency === 'Yearly') {
-        return sum + t.amount / 12;
-      }
-      return sum;
-    }, 0);
+  constructor(@Inject(PLATFORM_ID) platformId: Object, private router: Router, private auth: Auth) {
+    this.isBrowser = isPlatformBrowser(platformId);
+    this.filteredTransactions = [...this.transactions];
   }
 
-  isAdmin(): boolean {
-    return this.authService.isAdmin();
+  // Totals
+  get dailyTotal()      { return this.totalBy('Daily'); }
+  get weeklyTotal()     { return this.totalBy('Weekly'); }
+  get monthlyTotal()    { return this.totalBy('Monthly'); }
+  get halfAnnualTotal() { return this.totalBy('Half-Annual'); }
+  get annualTotal()     { return this.totalBy('Annual'); }
+
+  private totalBy(freq: string) {
+    return this.transactions
+      .filter(t => t.frequency.toLowerCase() === freq.toLowerCase())
+      .reduce((sum, t) => sum + t.amount, 0);
+  }
+
+  // Filters & Search
+  applyFilters() {
+    const term = this.searchTerm.toLowerCase();
+    this.filteredTransactions = this.transactions.filter(t => {
+      const matchesSearch =
+        t.name.toLowerCase().includes(term) ||
+        t.category.toLowerCase().includes(term) ||
+        t.frequency.toLowerCase().includes(term) ||
+        t.amount.toString().includes(term);
+
+      const matchesCategory = !this.filterCategory || t.category === this.filterCategory;
+      const matchesType = !this.filterType || (this.filterType === 'Income' ? t.amount >= 0 : t.amount < 0);
+      const matchesCurrency = !this.filterCurrency || true; // adapt if you add currency property
+      const matchesExtra =
+        !this.filterExtra ||
+        this.filterExtra === 'All Categories' ||
+        (this.filterExtra === 'Name' && t.name) ||
+        (this.filterExtra === 'Frequency' && t.frequency);
+
+      // Date filtering left as placeholder
+      return matchesSearch && matchesCategory && matchesType && matchesCurrency && matchesExtra;
+    });
   }
 
   addTransaction() {
@@ -79,6 +99,7 @@ export class RecurringTransactionComponent {
     } else {
       this.transactions.unshift({ ...this.newTransaction });
     }
+    this.applyFilters();
     this.showForm = false;
     this.isEdit = false;
     this.editIndex = null;
@@ -87,23 +108,24 @@ export class RecurringTransactionComponent {
   editTransaction(index: number) {
     this.showForm = true;
     this.isEdit = true;
-    this.editIndex = index;
-    this.newTransaction = { ...this.transactions[index] };
+    const realIndex = this.transactions.indexOf(this.filteredTransactions[index]);
+    this.editIndex = realIndex;
+    this.newTransaction = { ...this.transactions[realIndex] };
   }
 
   deleteTransaction(index: number) {
-    this.transactions.splice(index, 1);
+    const realIndex = this.transactions.indexOf(this.filteredTransactions[index]);
+    if (realIndex > -1) this.transactions.splice(realIndex, 1);
+    this.applyFilters();
   }
 
-  cancelForm() {
-    this.showForm = false;
-    this.isEdit = false;
-  }
+  cancelForm() { this.showForm = false; this.isEdit = false; }
 
-  goHome() { this.router.navigate(['/home']); }
-  goToTransaction() { this.router.navigate(['/transaction']); }
+  // Navigation
+  goHome()        { this.router.navigate(['/home']); }
+  goToTransaction(){ this.router.navigate(['/transaction']); }
   goToRecurring() { this.router.navigate(['/recurring-transaction']); }
-  goToContact() { this.router.navigate(['/contect-us']); }
-  goToAbout() { this.router.navigate(['/about']); }
-  goTowelcome() { this.router.navigate(['/login']); }
+  goToContact()   { this.router.navigate(['/contect-us']); }
+  goToAbout()     { this.router.navigate(['/about']); }
+  goTowelcome()   { this.router.navigate(['/login']); }
 }
