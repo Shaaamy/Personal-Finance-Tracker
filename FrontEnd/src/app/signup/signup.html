@@ -8,29 +8,48 @@
     <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
       <label for="name">Name</label>
       <input id="name" type="text" placeholder="John Doe" formControlName="fullName" required />
+      <div class="error" *ngIf="signupForm.get('fullName')?.touched && signupForm.get('fullName')?.invalid">
+        Name is required
+      </div>
 
       <label for="email">Email</label>
       <input id="email" type="email" placeholder="john.doe@example.com" formControlName="email" required />
+      <div class="error" *ngIf="signupForm.get('email')?.touched && signupForm.get('email')?.invalid">
+        Email is required
+      </div>
 
       <label for="password">Password</label>
-      <input id="password" type="password" placeholder="******" required formControlName="password" />
+      <input id="password" type="password" placeholder="******" formControlName="password" required />
+      <div class="error" *ngIf="signupForm.get('password')?.touched && signupForm.get('password')?.invalid">
+        Password is required
+      </div>
 
       <label for="confirmPassword">Confirm Password</label>
-      <input id="confirmPassword" type="password" placeholder="******" required formControlName="confirmPassword" />
+      <input id="confirmPassword" type="password" placeholder="******" formControlName="confirmPassword" required />
+      <div class="error" *ngIf="signupForm.get('confirmPassword')?.touched && signupForm.get('confirmPassword')?.invalid">
+        Confirm Password is required
+      </div>
 
       <label for="balance">Balance</label>
       <input id="balance" type="number" placeholder="1000" formControlName="balance" required />
+      <div class="error" *ngIf="signupForm.get('balance')?.touched && signupForm.get('balance')?.invalid">
+        Balance is required
+      </div>
 
       <label for="username">userName</label>
       <input id="username" type="text" placeholder="john.doe" formControlName="username" required />
+      <div class="error" *ngIf="signupForm.get('username')?.touched && signupForm.get('username')?.invalid">
+        Username is required
+      </div>
 
-      <button type="button" class="btn signup-btn" (click)="goToSignup()">
-  Sign Up
-</button>
+      <!-- ✅ type="submit" حتى يتم استدعاء onSubmit -->
+      <button type="submit" class="btn signup-btn" [disabled]="signupForm.invalid">
+        Sign Up
+      </button>
     </form>
 
-   <p class="login-text">
-  Already have an account? <a (click)="goTo()">Login</a></p>
-
+    <p class="login-text">
+      Already have an account? <a (click)="goTo()">Login</a>
+    </p>
   </div>
 </div>
